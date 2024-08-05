@@ -108,7 +108,7 @@ export class Enemy {
     // }
 
     private attackPlayer(enemy: Phaser.GameObjects.Sprite) {
-        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 200);
+        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 0);
 
         if (enemy.anims.currentAnim?.key !== 'attack') {
             enemy.anims.play('attack');

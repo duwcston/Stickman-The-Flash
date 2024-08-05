@@ -22,7 +22,7 @@ export class Controller {
             }
             this.player.player.anims.play('attack');
 
-            const startHit = (anim: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            const startHit = (_anim: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
                 if (frame.index < 5) {
                     return;
                 }
