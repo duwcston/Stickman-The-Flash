@@ -14,8 +14,8 @@ export class Boss extends Enemy {
         return Boss._instanceBoss;
     }
 
-    constructor(scene: Phaser.Scene, player: Player, ground: Phaser.GameObjects.Image) {
-        super(scene, player, ground);
+    constructor(scene: Phaser.Scene, player: Player, road: Phaser.GameObjects.Image) {
+        super(scene, player, road);
 
         Boss._instanceBoss = this;
         this._bossHealth = this._bossMaxHealth;
@@ -68,7 +68,7 @@ export class Boss extends Enemy {
         this.enemy.anims.play('idle');
         this.enemy.scale = 2;
         this._enemyGroup.add(this.enemy);
-        this.scene.physics.add.collider(this.enemy, this.ground, () => { });
+        this.scene.physics.add.collider(this.enemy, this.road, () => { });
         this.enemyVsPlayer();
         this.bossIsTakingDamage = false;
 

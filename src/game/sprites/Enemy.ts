@@ -3,7 +3,7 @@ import { Player } from "./Player";
 export class Enemy {
     scene: Phaser.Scene;
     enemy: Phaser.GameObjects.Sprite;
-    ground: Phaser.GameObjects.Image;
+    road: Phaser.GameObjects.Image;
     player: Player;
     private static _instanceEnemy: Enemy;
     protected _enemyGroup: Phaser.Physics.Arcade.Group;
@@ -15,11 +15,11 @@ export class Enemy {
         return Enemy._instanceEnemy;
     }
 
-    constructor(scene: Phaser.Scene, player: Player, ground: Phaser.GameObjects.Image) {
+    constructor(scene: Phaser.Scene, player: Player, road: Phaser.GameObjects.Image) {
         Enemy._instanceEnemy = this;
 
         this.scene = scene;
-        this.ground = ground;
+        this.road = road;
         this.player = player;
         this._enemyHealth = this._enemyMaxHealth;
         this._enemyGroup = this.scene.physics.add.group({
@@ -57,12 +57,12 @@ export class Enemy {
     }
 
     private getRandomX() {
-        const x = [0, this.scene.sys.canvas.width];
+        const x = [0, this.scene.scale.width];
         return x[Math.floor(Math.random() * x.length)];
     }
 
     private getRandomY() {
-        return Phaser.Math.Between(0, this.scene.sys.canvas.height - this.ground.height * 2 * 1.8);
+        return Phaser.Math.Between(0, this.scene.scale.height - 80);
     }
 
     protected createEnemyImage() {
@@ -71,7 +71,7 @@ export class Enemy {
             this.enemy.flipX = true;
         }
         this.enemy.tint = 0x000000;
-        this.scene.physics.add.collider(this.enemy, this.ground, () => {
+        this.scene.physics.add.collider(this.enemy, this.road, () => {
             (this.enemy.body as Phaser.Physics.Arcade.Body).setVelocityY(-300);
         });
         this._enemyGroup.add(this.enemy);
@@ -104,7 +104,7 @@ export class Enemy {
     }
 
     protected attackPlayer(enemy: Phaser.GameObjects.Sprite) {
-        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 0);
+        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 100);
 
         if (enemy.anims.currentAnim?.key !== 'attack') {
             enemy.anims.play('attack');

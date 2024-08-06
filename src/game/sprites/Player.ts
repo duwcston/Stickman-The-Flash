@@ -4,7 +4,7 @@ import { Boss } from "./Boss";
 export class Player {
     scene: Phaser.Scene;
     player: Phaser.GameObjects.Sprite;
-    ground: Phaser.GameObjects.Image;
+    road: Phaser.GameObjects.Image;
     swordHitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     playerHealthBar: Phaser.GameObjects.Graphics;
     creepOverlap: Phaser.Physics.Arcade.Collider;
@@ -20,12 +20,12 @@ export class Player {
         return Player._instancePlayer;
     }
 
-    constructor(scene: Phaser.Scene, ground: Phaser.GameObjects.Image) {
+    constructor(scene: Phaser.Scene, road: Phaser.GameObjects.Image) {
         Player._instancePlayer = this;
 
         this.scene = scene;
-        this.ground = ground;
-        this.createPlayer(this.scene.scale.width / 2, this.scene.scale.height - this.ground.height * 2 * 1.8);
+        this.road = road;
+        this.createPlayer(this.scene.scale.width / 2, this.scene.scale.height / 2 + 50);
         this.createSwordHitbox();
         this._enemyKilled = 0;
 
@@ -72,7 +72,7 @@ export class Player {
 
         this.player.anims.play('idle');
         this.isTakingDamage = false;
-        this.scene.physics.add.collider(this.player, this.ground);
+        this.scene.physics.add.collider(this.player, this.road);
     }
 
     private createSwordHitbox(): void {

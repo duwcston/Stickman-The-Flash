@@ -3,13 +3,13 @@ import { Player } from "../sprites/Player";
 export class Controller {
     scene: Phaser.Scene;
     player: Player;
-    ground: Phaser.GameObjects.Image;
+    road: Phaser.GameObjects.Image;
     flashable: boolean = true;
 
-    constructor(scene: Phaser.Scene, player: Player, ground: Phaser.GameObjects.Image) {
+    constructor(scene: Phaser.Scene, player: Player, road: Phaser.GameObjects.Image) {
         this.scene = scene;
         this.player = player;
-        this.ground = ground;
+        this.road = road;
         this.scene.input.on('pointerdown', this._flash, this);
     }
 
@@ -48,7 +48,7 @@ export class Controller {
     }
 
     public flashOff(pointer: Phaser.Input.Pointer) {
-        if (pointer.y > this.scene.scale.height - this.ground.height * 2) {
+        if (pointer.y > this.scene.scale.height - 80) {
             this.flashable = false;
         }
         else {

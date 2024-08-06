@@ -38,8 +38,9 @@ export class Spawner {
             delay: newInterval,
             callback: () => {
                 const enemyKilled = Player.instancePlayer.enemyKilled;
-                if (enemyKilled >= 5) { // Debugging
+                if (enemyKilled >= 5) {
                     console.log('Boss spawned');
+                    this.destroyAllCreeps();
                     this.spawnBoss();
                     this._timer.remove();
                 }
@@ -60,5 +61,12 @@ export class Spawner {
     private spawnBoss() {
         this._boss.spawnBoss();
         Enemy.instanceEnemy.enemyGroup.add(this._boss.enemy);
+    }
+
+    private destroyAllCreeps() {
+        const enemies = Enemy.instanceEnemy.enemyGroup.getChildren() as Phaser.GameObjects.Sprite[];
+        enemies.forEach((enemy) => {
+            enemy.destroy();
+        });
     }
 }
