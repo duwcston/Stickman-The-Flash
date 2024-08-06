@@ -8,7 +8,6 @@ export class Preloader extends Scene {
     init() {
         const { width, height } = this.sys.game.config;
 
-        // this.add.image(512, 384, 'background');
         this.add.image(width as number / 2, height as number / 2, 'moon');
         this.add.image(width as number / 2, height as number / 2, 'city');
         this.add.image(width as number / 2, height as number / 2, 'citybg');

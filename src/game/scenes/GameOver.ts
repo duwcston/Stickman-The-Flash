@@ -5,10 +5,6 @@ export class GameOver extends Scene {
         super({ key: 'GameOver' });
     }
 
-    preload(): void {
-
-    }
-
     create(): void {
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;

@@ -66,13 +66,13 @@ export class Enemy {
     }
 
     protected createEnemyImage() {
-        this.enemy = this.scene.physics.add.sprite(this.getRandomX(), this.getRandomY(), 'knight').setSize(50, 110);
+        this.enemy = this.scene.physics.add.sprite(this.getRandomX(), this.getRandomY(), 'knight').setSize(50, 110).setGravityY(300);
         if (this.enemy.x > this.player.player.x) {
             this.enemy.flipX = true;
         }
         this.enemy.tint = 0x000000;
         this.scene.physics.add.collider(this.enemy, this.road, () => {
-            (this.enemy.body as Phaser.Physics.Arcade.Body).setVelocityY(-300);
+            (this.enemy.body as Phaser.Physics.Arcade.Body).setVelocityY(300);
         });
         this._enemyGroup.add(this.enemy);
         this.enemyVsPlayer();
@@ -94,7 +94,7 @@ export class Enemy {
                         this.attackPlayer(enemy);
                     } else {
                         enemy.flipX = (enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0
-                        this.chasePlayer(enemy, 200);
+                        this.chasePlayer(enemy, 300);
                     }
                 });
             },
@@ -104,7 +104,7 @@ export class Enemy {
     }
 
     protected attackPlayer(enemy: Phaser.GameObjects.Sprite) {
-        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 100);
+        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 300);
 
         if (enemy.anims.currentAnim?.key !== 'attack') {
             enemy.anims.play('attack');

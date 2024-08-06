@@ -90,10 +90,10 @@ export class Player {
 
     private killEnemy(_swordHitbox: Phaser.GameObjects.GameObject, enemy: Phaser.GameObjects.GameObject) {
         Enemy.instanceEnemy.enemyHealth -= this.playerDamage;
-        console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
+        // console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
         if (Enemy.instanceEnemy.enemyHealth <= 0) {
             this._enemyKilled++;
-            console.log('Enemy killed: ', this._enemyKilled);
+            // console.log('Enemy killed: ', this._enemyKilled); 
             enemy.destroy();
             Enemy.instanceEnemy.enemyGroup.remove(enemy);
             Enemy.instanceEnemy.enemyHealth = Enemy.instanceEnemy.enemyMaxHealth;

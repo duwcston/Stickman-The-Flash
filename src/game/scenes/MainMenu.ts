@@ -3,8 +3,6 @@ import { Player } from "../sprites/Player";
 
 export class MainMenu extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
-    gameText: Phaser.GameObjects.Text;
     moon: Phaser.GameObjects.TileSprite;
     citybg: Phaser.GameObjects.TileSprite;
     city: Phaser.GameObjects.TileSprite;

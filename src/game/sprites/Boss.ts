@@ -64,7 +64,6 @@ export class Boss extends Enemy {
 
     protected createBossImage() {
         this.enemy = this.scene.physics.add.sprite(this.scene.scale.width / 2, 0, 'knight').setSize(60, 110);
-        // this.enemy.tint = 0xd13736;
         this.enemy.anims.play('idle');
         this.enemy.scale = 2;
         this._enemyGroup.add(this.enemy);
