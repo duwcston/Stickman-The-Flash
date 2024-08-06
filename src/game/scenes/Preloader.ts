@@ -38,27 +38,27 @@ export class Preloader extends Scene {
         //  For example, you can define global animations here, so we can use them in other scenes.
         this.anims.create({
             key: 'idle',
-            frames: this.anims.generateFrameNames('knight', { prefix: 'Idle (', start: 1, end: 10, zeroPad: 1, suffix: ').png' }),
+            frames: this.anims.generateFrameNames('knight', { prefix: 'Idle (', start: 1, end: 10, suffix: ').png' }),
             repeat: -1,
             frameRate: 20
         });
 
         this.anims.create({
             key: 'run',
-            frames: this.anims.generateFrameNames('knight', { prefix: 'Run (', start: 1, end: 8, zeroPad: 1, suffix: ').png' }),
+            frames: this.anims.generateFrameNames('knight', { prefix: 'Run (', start: 1, end: 8, suffix: ').png' }),
             repeat: -1,
             frameRate: 20
         });
 
         this.anims.create({
             key: 'attack',
-            frames: this.anims.generateFrameNames('knight', { prefix: 'Attack (', start: 1, end: 10, zeroPad: 1, suffix: ').png' }),
+            frames: this.anims.generateFrameNames('knight', { prefix: 'Attack (', start: 1, end: 10, suffix: ').png' }),
             repeat: 0,
             frameRate: 20
         });
+
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('MainMenu');
         // this.scene.start('Game');
-
     }
 }

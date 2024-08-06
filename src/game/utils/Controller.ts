@@ -16,14 +16,14 @@ export class Controller {
     private _flash(pointer: Phaser.Input.Pointer) {
         if (this.flashable) {
             this.player.player.destroy();
-            this.player.createPlayer(pointer.x, pointer.y);
+            this.player.createPlayer(pointer.worldX, pointer.worldY);
             if (pointer.x < this.scene.scale.width / 2) {
                 this.player.player.flipX = true;
             }
             this.player.player.anims.play('attack');
 
             const startHit = (_anim: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
-                if (frame.index < 5) {
+                if (frame.index < 10) {
                     return;
                 }
                 this.player.player.off(Phaser.Animations.Events.ANIMATION_UPDATE, startHit);
@@ -34,16 +34,15 @@ export class Controller {
 
                 this.player.swordHitbox.y = this.player.player.y + this.player.player.height / 4 - 5;
 
-                this.scene.physics.world.add(this.player.swordHitbox.body);
                 this.player.swordHitbox.body.enable = true;
-                this.player.swordHitbox.visible = true;
+                this.scene.physics.world.add(this.player.swordHitbox.body);
             }
             this.player.player.on(Phaser.Animations.Events.ANIMATION_UPDATE, startHit);
 
-
             this.player.player.once('animationcomplete', () => {
-                this.player.swordHitbox.body.enable = false;
                 this.player.player.anims.play('idle');
+                this.player.swordHitbox.body.enable = false;
+                this.scene.physics.world.remove(this.player.swordHitbox.body);
             });
         }
     }

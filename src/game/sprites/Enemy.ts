@@ -5,10 +5,11 @@ export class Enemy {
     enemy: Phaser.GameObjects.Sprite;
     ground: Phaser.GameObjects.Image;
     player: Player;
-    timer: Phaser.Time.TimerEvent;
     private static _instanceEnemy: Enemy;
-    private _enemyGroup: Phaser.Physics.Arcade.Group;
-    private _enemyDamage: number = 5;
+    protected _enemyGroup: Phaser.Physics.Arcade.Group;
+    private _enemyHealth: number;
+    private _enemyMaxHealth: number = 10;
+    private _enemyDamage: number = 10;
 
     static get instanceEnemy() {
         return Enemy._instanceEnemy;
@@ -20,9 +21,10 @@ export class Enemy {
         this.scene = scene;
         this.ground = ground;
         this.player = player;
+        this._enemyHealth = this._enemyMaxHealth;
         this._enemyGroup = this.scene.physics.add.group({
             classType: Phaser.GameObjects.Sprite,
-            runChildUpdate: true
+            runChildUpdate: true,
         });
     }
 
@@ -30,8 +32,28 @@ export class Enemy {
         return this._enemyGroup;
     }
 
+    get enemyHealth() {
+        return this._enemyHealth;
+    }
+
+    get enemyMaxHealth() {
+        return this._enemyMaxHealth;
+    }
+
     get enemyDamage() {
         return this._enemyDamage;
+    }
+
+    set enemyHealth(value: number) {
+        this._enemyHealth = value;
+    }
+
+    set enemyMaxHealth(value: number) {
+        this._enemyMaxHealth = value;
+    }
+
+    set enemyDamage(value: number) {
+        this._enemyDamage = value;
     }
 
     private getRandomX() {
@@ -43,7 +65,7 @@ export class Enemy {
         return Phaser.Math.Between(0, this.scene.sys.canvas.height - this.ground.height * 2 * 1.8);
     }
 
-    private createEnemyImage() {
+    protected createEnemyImage() {
         this.enemy = this.scene.physics.add.sprite(this.getRandomX(), this.getRandomY(), 'knight').setSize(50, 110);
         if (this.enemy.x > this.player.player.x) {
             this.enemy.flipX = true;
@@ -54,9 +76,14 @@ export class Enemy {
         });
         this._enemyGroup.add(this.enemy);
         this.enemyVsPlayer();
+        // console.log('Enemy spawned', this._enemyGroup.countActive()); // Debugging
     }
 
-    public enemyVsPlayer() {
+    public spawnCreep() {
+        this.createEnemyImage();
+    }
+
+    protected enemyVsPlayer() {
         this.scene.time.addEvent({
             delay: 100, // Check every 100ms
             callback: () => {
@@ -67,7 +94,7 @@ export class Enemy {
                         this.attackPlayer(enemy);
                     } else {
                         enemy.flipX = (enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0
-                        this.chasePlayer(enemy);
+                        this.chasePlayer(enemy, 200);
                     }
                 });
             },
@@ -76,38 +103,7 @@ export class Enemy {
         });
     }
 
-    public spawnEnemy(interval: number) {
-        this.timer = this.scene.time.addEvent({
-            delay: interval,
-            callback: () => {
-                this.createEnemyImage();
-                if (Player.instancePlayer.enemyKilled >= 3) {
-                    console.log('More enemy spawned');
-                    this.updateSpawnTime(1000);
-                }
-            },
-            callbackScope: this,
-            loop: true
-        });
-    }
-
-    private updateSpawnTime(newInterval: number) {
-        this.timer.remove();
-        this.timer = this.scene.time.addEvent({
-            delay: newInterval,
-            callback: () => {
-                this.createEnemyImage();
-            },
-            callbackScope: this,
-            loop: true
-        });
-    }
-
-    // private spawnBoss() {
-
-    // }
-
-    private attackPlayer(enemy: Phaser.GameObjects.Sprite) {
+    protected attackPlayer(enemy: Phaser.GameObjects.Sprite) {
         (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 0);
 
         if (enemy.anims.currentAnim?.key !== 'attack') {
@@ -122,14 +118,14 @@ export class Enemy {
         }
     }
 
-    private chasePlayer(enemy: Phaser.GameObjects.Sprite) {
-        this.scene.physics.moveToObject(enemy, this.player.player, 200);
+    protected chasePlayer(enemy: Phaser.GameObjects.Sprite, chaseSpeed: number) {
+        this.scene.physics.moveToObject(enemy, this.player.player, chaseSpeed);
         if (enemy.anims.currentAnim?.key !== 'run') {
             enemy.anims.play('run');
         }
     }
 
-    private knockbackPlayer() {
+    protected knockbackPlayer() {
         const enemies = this._enemyGroup.getChildren() as Phaser.GameObjects.Sprite[];
         enemies.forEach((enemy) => {
             if (enemy.anims.currentAnim?.key === 'attack') {
