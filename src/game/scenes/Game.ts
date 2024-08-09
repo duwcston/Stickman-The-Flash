@@ -12,6 +12,7 @@ export class Game extends Scene {
     citybg: Phaser.GameObjects.TileSprite;
     city: Phaser.GameObjects.TileSprite;
     road: Phaser.GameObjects.Image;
+    // road: Phaser.GameObjects.TileSprite;
     player: Player;
     controller: Controller;
     enemy: Enemy;
@@ -20,7 +21,14 @@ export class Game extends Scene {
     spawnTime: number = 5000;
 
     constructor() {
-        super({ key: 'Game' });
+        super({
+            key: 'Game',
+            // pack: {
+            //     files: [
+            //         { type: 'scenePlugin', key: 'SpinePlugin', url: 'src/plugins/SpinePluginDebug (1).js', sceneKey: 'spine' }
+            //     ]
+            // }
+        });
     }
 
     create(): void {
@@ -28,10 +36,6 @@ export class Game extends Scene {
 
         this.camera = this.cameras.main;
         this.camera.fadeIn(1000, 0, 0, 0);
-
-        this.camera.setBounds(0, 0, width as number * 2, height as number);
-        this.physics.world.bounds.width = width as number * 2;
-        this.physics.world.bounds.height = height as number;
 
         this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon').setScale(1.5);
         this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg').setScale(1.5);
@@ -44,9 +48,6 @@ export class Game extends Scene {
             .refreshBody();
 
         this.player = new Player(this, this.road);
-
-        this.camera.startFollow(this.player.player, true, 0.1, 0.1);
-        this.camera.setFollowOffset(this.player.player.width, this.player.player.height);
 
         this.enemy = new Enemy(this, this.player, this.road);
         this.boss = new Boss(this, this.player, this.road);
@@ -65,9 +66,11 @@ export class Game extends Scene {
         this.citybg.tilePositionX += 0.3;
         this.city.tilePositionX += 0.5;
 
+        this.player.updateHitbox();
         this.controller.flashOff(this.input.activePointer);
 
         if (this.player.health <= 0 || this.boss.bossIsKilled) {
+            // this.player.player.setAnimation(0, 'death', false);
             this.handleGameOver();
         }
     }

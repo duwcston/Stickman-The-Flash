@@ -62,7 +62,7 @@ export class Enemy {
     }
 
     private getRandomY() {
-        return Phaser.Math.Between(0, this.scene.scale.height - 80);
+        return Phaser.Math.Between(0, this.scene.scale.height - 100);
     }
 
     protected createEnemyImage() {
@@ -72,7 +72,7 @@ export class Enemy {
         }
         this.enemy.tint = 0x000000;
         this.scene.physics.add.collider(this.enemy, this.road, () => {
-            (this.enemy.body as Phaser.Physics.Arcade.Body).setVelocityY(300);
+            // (this.enemy.body as Phaser.Physics.Arcade.Body).setVelocityY(300);
         });
         this._enemyGroup.add(this.enemy);
         this.enemyVsPlayer();

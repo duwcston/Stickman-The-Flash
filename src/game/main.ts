@@ -5,6 +5,7 @@ import { Preloader } from './scenes/Preloader';
 import { SIZE_WIDTH_SCREEN, SIZE_HEIGHT_SCREEN } from './utils/Constant';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
+import 'phaser/plugins/spine/dist/SpinePlugin';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -31,6 +32,15 @@ const config: Phaser.Types.Core.GameConfig = {
         MainGame,
         GameOver
     ],
+    plugins: {
+        scene: [
+            {
+                key: 'SpinePlugin',
+                plugin: window.SpinePlugin,
+                mapping: 'spine'
+            }
+        ]
+    },
     callbacks: {
         postBoot: function (game) {
             game.canvas.style.width = '100%';

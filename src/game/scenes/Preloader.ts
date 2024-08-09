@@ -2,7 +2,14 @@ import { Scene } from 'phaser';
 
 export class Preloader extends Scene {
     constructor() {
-        super('Preloader');
+        super({
+            key: 'Preloader',
+            // pack: {
+            //     files: [
+            //         { type: 'scenePlugin', key: 'SpinePlugin', url: 'src/plugins/SpinePluginDebug (1).js', sceneKey: 'spine' }
+            //     ]
+            // }
+        });
     }
 
     init() {
@@ -31,6 +38,9 @@ export class Preloader extends Scene {
 
         this.load.atlas('knight', 'knight.png', 'knight.json');
         this.load.image('road', 'road.png');
+
+        //  Load the Spine animation data
+        this.load.spine('spiderman', 'spine/spider_man_epic1.json', 'spine/spider_man_epic1.atlas');
     }
 
     create() {
@@ -58,7 +68,7 @@ export class Preloader extends Scene {
         });
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('MainMenu');
-        // this.scene.start('Game');
+        // this.scene.start('MainMenu');
+        this.scene.start('Game');
     }
 }

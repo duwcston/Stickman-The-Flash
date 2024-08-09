@@ -5,7 +5,7 @@ export class Boss extends Enemy {
     private static _instanceBoss: Boss;
     private _bossDamage: number = 50;
     private _bossHealth: number;
-    private _bossMaxHealth: number = 200;
+    private _bossMaxHealth: number = 1000;
     private _bossHealthBar: Phaser.GameObjects.Graphics;
     private _bossIsTakingDamage: boolean;
     private _bossIsKilled: boolean;
