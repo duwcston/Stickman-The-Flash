@@ -2,14 +2,14 @@ import { Player } from "./Player";
 
 export class Enemy {
     scene: Phaser.Scene;
-    enemy: Phaser.GameObjects.Sprite;
+    enemy: SpineGameObject
     road: Phaser.GameObjects.Image;
     player: Player;
     private static _instanceEnemy: Enemy;
     protected _enemyGroup: Phaser.Physics.Arcade.Group;
     private _enemyHealth: number;
     private _enemyMaxHealth: number = 10;
-    private _enemyDamage: number = 10;
+    private _enemyDamage: number = 5;
 
     static get instanceEnemy() {
         return Enemy._instanceEnemy;
@@ -66,15 +66,15 @@ export class Enemy {
     }
 
     protected createEnemyImage() {
-        this.enemy = this.scene.physics.add.sprite(this.getRandomX(), this.getRandomY(), 'knight').setSize(50, 110).setGravityY(300);
+        // this.enemy = this.scene.physics.add.sprite(this.getRandomX(), this.getRandomY(), 'knight').setSize(50, 110).setGravityY(300);
+        this.enemy = this.scene.add.spine(this.getRandomX(), this.getRandomY(), 'enemy');
+        this.enemy.setScale(0.1);
+        this.scene.physics.add.existing(this.enemy as unknown as Phaser.Physics.Arcade.Image);
         if (this.enemy.x > this.player.player.x) {
-            this.enemy.flipX = true;
+            this.enemy.setScale(-0.1, 0.1);
         }
-        this.enemy.tint = 0x000000;
-        this.scene.physics.add.collider(this.enemy, this.road, () => {
-            // (this.enemy.body as Phaser.Physics.Arcade.Body).setVelocityY(300);
-        });
-        this._enemyGroup.add(this.enemy);
+        this.scene.physics.add.collider(this.enemy as unknown as Phaser.Physics.Arcade.Image, this.road);
+        this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Image);
         this.enemyVsPlayer();
         // console.log('Enemy spawned', this._enemyGroup.countActive()); // Debugging
     }
@@ -87,13 +87,17 @@ export class Enemy {
         this.scene.time.addEvent({
             delay: 100, // Check every 100ms
             callback: () => {
-                const enemies = this._enemyGroup.getChildren() as Phaser.GameObjects.Sprite[];
+                const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {
                     const distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.player.x, this.player.player.y);
                     if (distance < 70) {
                         this.attackPlayer(enemy);
                     } else {
-                        enemy.flipX = (enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0
+                        if ((enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0) {
+                            enemy.setScale(-0.1, 0.1);
+                        } else {
+                            enemy.setScale(0.1);
+                        }
                         this.chasePlayer(enemy, 300);
                     }
                 });
@@ -103,45 +107,45 @@ export class Enemy {
         });
     }
 
-    protected attackPlayer(enemy: Phaser.GameObjects.Sprite) {
+    protected attackPlayer(enemy: SpineGameObject) {
+        // Ensure the enemy stops any current movement
         (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 300);
+        const enemyAttackAnims = ['dash_attack'];
+        const currentTrackEntry = enemy.state.getCurrent(0);
+        const currentAnimation = currentTrackEntry?.animation?.name;
 
-        if (enemy.anims.currentAnim?.key !== 'attack') {
-            enemy.anims.play('attack');
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            enemy.on('animationcomplete', (anim: Phaser.Animations.Animation, _frame: Phaser.Animations.AnimationFrame) => {
-                if (anim.key === 'attack') {
-                    enemy.anims.play('attack');
-                    this.knockbackPlayer();
+        if (!enemyAttackAnims.includes(currentAnimation)) {
+            // Set the dash attack animation
+            enemy.state.setAnimation(0, 'dash_attack', false);
+
+            // Handle the completion of the dash attack animation
+            enemy.state.addListener({
+                event: () => { },
+                start: () => { },
+                interrupt: () => { },
+                end: () => { },
+                dispose: () => { },
+                complete: (trackEntry) => {
+                    if (enemyAttackAnims.includes(trackEntry.animation.name)) {
+                        enemy.state.setAnimation(0, 'idle', true);
+                        this.player.isTakingDamage = true;
+                        this.scene.time.delayedCall(100, () => {
+                            this.player.isTakingDamage = false;
+                        });
+                    }
                 }
             });
         }
     }
 
-    protected chasePlayer(enemy: Phaser.GameObjects.Sprite, chaseSpeed: number) {
+    protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
         this.scene.physics.moveToObject(enemy, this.player.player, chaseSpeed);
-        if (enemy.anims.currentAnim?.key !== 'run') {
-            enemy.anims.play('run');
-        }
-    }
 
-    protected knockbackPlayer() {
-        const enemies = this._enemyGroup.getChildren() as Phaser.GameObjects.Sprite[];
-        enemies.forEach((enemy) => {
-            if (enemy.anims.currentAnim?.key === 'attack') {
-                this.scene.add.tween({
-                    targets: this.player.player,
-                    x: this.player.player.x + (this.enemy.x > this.player.player.x ? -50 : 50),
-                    duration: 100,
-                    yoyo: true,
-                    onStart: () => {
-                        this.player.isTakingDamage = true;
-                    },
-                    onComplete: () => {
-                        this.player.isTakingDamage = false;
-                    }
-                });
-            }
-        });
+        const currentTrackEntry = this.enemy.state.getCurrent(0);
+        const currentAnimation = currentTrackEntry?.animation?.name;
+
+        if (currentAnimation !== 'dash') {
+            enemy.setAnimation(0, 'dash', true);
+        }
     }
 }

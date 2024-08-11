@@ -57,13 +57,11 @@ export class Player {
     public set isTakingDamage(value: boolean) {
         this._isTakingDamage = value;
         if (this._isTakingDamage) {
-            // this.player.body.setTint(0xff0000);
             this.player.setAnimation(0, 'hit', false);
             this.takeDamage(Enemy.instanceEnemy.enemyDamage);
         }
         else {
-            // this.player.body.clearTint();
-            // this.player.setAnimation(0, 'idle', true);
+            this.player.setAnimation(0, 'idle', true);
         }
     }
 

@@ -21,14 +21,7 @@ export class Game extends Scene {
     spawnTime: number = 5000;
 
     constructor() {
-        super({
-            key: 'Game',
-            // pack: {
-            //     files: [
-            //         { type: 'scenePlugin', key: 'SpinePlugin', url: 'src/plugins/SpinePluginDebug (1).js', sceneKey: 'spine' }
-            //     ]
-            // }
-        });
+        super({ key: 'Game' });
     }
 
     create(): void {
