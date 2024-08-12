@@ -55,34 +55,21 @@ export class Boss extends Enemy {
     }
 
     public spawnBoss() {
-        this.createBossImage();
+        this.createEnemyImage();
         this.createBossHealthBar();
         Enemy.instanceEnemy.enemyDamage = this.bossDamage;
         Enemy.instanceEnemy.enemyHealth = this.bossMaxHealth;
         this.player.attackBoss();
     }
 
-    protected createBossImage() {
-        this.enemy = this.scene.physics.add.sprite(this.scene.scale.width / 2, 0, 'knight').setSize(60, 110);
-        this.enemy.anims.play('idle');
-        this.enemy.scale = 2;
-        this._enemyGroup.add(this.enemy);
+    protected createEnemyImage() {
+        this.enemy = this.scene.add.spine(this.scene.scale.width / 2, 0, 'enemy');
+        this.scene.physics.add.existing(this.enemy as unknown as Phaser.Physics.Arcade.Image);
+        this.enemy.setScale(1);
+        this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Image);
         this.scene.physics.add.collider(this.enemy, this.road, () => { });
         this.enemyVsPlayer();
         this.bossIsTakingDamage = false;
-
-        const changeTint = () => {
-            const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            this.enemy.setTint(randomColor);
-        };
-
-        this.scene.time.addEvent({
-            delay: 500,
-            callback: changeTint,
-            callbackScope: this,
-            loop: true
-        });
     }
 
     protected enemyVsPlayer() {
@@ -95,7 +82,11 @@ export class Boss extends Enemy {
                     if (distance < 120) {
                         this.attackPlayer(enemy);
                     } else {
-                        enemy.flipX = (enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0;
+                        if ((enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0) {
+                            enemy.setScale(-0.1, 0.1);
+                        } else {
+                            enemy.setScale(0.1);
+                        }
                         this.chasePlayer(enemy, 100);
                     }
                 });
@@ -108,11 +99,10 @@ export class Boss extends Enemy {
     public set bossIsTakingDamage(value: boolean) {
         this._bossIsTakingDamage = value;
         if (this._bossIsTakingDamage) {
-            this.enemy.setTint(0x979eb7);
             this.bossTakeDamage(Player.instancePlayer.playerDamage);
         }
         else {
-            this.enemy.clearTint();
+
         }
     }
 

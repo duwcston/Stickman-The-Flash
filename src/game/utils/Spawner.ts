@@ -55,12 +55,12 @@ export class Spawner {
 
     private spawnCreep() {
         this._enemy.spawnCreep();
-        Enemy.instanceEnemy.enemyGroup.add(this._enemy.enemy);
+        Enemy.instanceEnemy.enemyGroup.add(this._enemy.enemy as unknown as Phaser.Physics.Arcade.Image);
     }
 
     private spawnBoss() {
         this._boss.spawnBoss();
-        Enemy.instanceEnemy.enemyGroup.add(this._boss.enemy);
+        Enemy.instanceEnemy.enemyGroup.add(this._boss.enemy as unknown as Phaser.Physics.Arcade.Image);
     }
 
     private destroyAllCreeps() {

@@ -24,7 +24,7 @@ export class Enemy {
         this._enemyHealth = this._enemyMaxHealth;
         this._enemyGroup = this.scene.physics.add.group({
             classType: Phaser.GameObjects.Sprite,
-            runChildUpdate: true,
+            // runChildUpdate: true,
         });
     }
 

@@ -131,29 +131,21 @@ export class Player {
     public attackBoss() {
         this.creepOverlap.active = false;
         const attackAnims = ['dash_attack', 'attack_dam', 'da'];
+
         this.scene.physics.add.overlap(this.swordHitbox, Enemy.instanceEnemy.enemyGroup, () => {
             const currentTrackEntry = this.player.state.getCurrent(0);
             const currentAnimation = currentTrackEntry?.animation?.name;
 
             if (attackAnims.includes(currentAnimation)) {
                 const enemy = Enemy.instanceEnemy.enemy;
-
-                this.scene.add.tween({
-                    targets: enemy,
-                    ease: 'Sine.easeInOut',
-                    duration: 100,
-                    repeat: 0,
-                    yoyo: true,
-                    alpha: 0.5,
-                    onStart: () => {
-                        Boss.instanceBoss.bossIsTakingDamage = true;
-                    },
-                    onComplete: () => {
-                        Boss.instanceBoss.bossIsTakingDamage = false;
-                    }
+                Boss.instanceBoss.bossIsTakingDamage = true;
+                enemy.state.setAnimation(0, 'hit', false);
+                this.scene.time.delayedCall(100, () => {
+                    Boss.instanceBoss.bossIsTakingDamage = false;
+                    enemy.state.setAnimation(0, 'idle', true);
                 });
             }
-        },
-            undefined, this);
+        }, undefined, this);
     }
+
 }
