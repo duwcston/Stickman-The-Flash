@@ -1,11 +1,12 @@
 import { Player } from "./Player";
 import { Enemy } from "./Enemy";
+import { BOSS_ATTACK_RANGE, BOSS_SPEED, BOSS_SCALE } from "../utils/Constant";
 
 export class Boss extends Enemy {
     private static _instanceBoss: Boss;
-    private _bossDamage: number = 50;
+    private _bossDamage: number = 30;
     private _bossHealth: number;
-    private _bossMaxHealth: number = 1000;
+    private _bossMaxHealth: number = 500;
     private _bossHealthBar: Phaser.GameObjects.Graphics;
     private _bossIsTakingDamage: boolean;
     private _bossIsKilled: boolean;
@@ -50,44 +51,58 @@ export class Boss extends Enemy {
         this._bossIsKilled = value;
         if (this._bossIsKilled) {
             this._bossHealthBar.clear();
-            this._enemyGroup.clear(true, true);
+            this.enemy.setAnimation(0, 'die', false);
         }
     }
 
     public spawnBoss() {
-        this.createEnemyImage();
+        this.createBossImage();
         this.createBossHealthBar();
         Enemy.instanceEnemy.enemyDamage = this.bossDamage;
         Enemy.instanceEnemy.enemyHealth = this.bossMaxHealth;
         this.player.attackBoss();
     }
 
-    protected createEnemyImage() {
+    protected createBossImage() {
         this.enemy = this.scene.add.spine(this.scene.scale.width / 2, 0, 'enemy');
-        this.scene.physics.add.existing(this.enemy as unknown as Phaser.Physics.Arcade.Image);
-        this.enemy.setScale(1);
-        this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Image);
-        this.scene.physics.add.collider(this.enemy, this.road, () => { });
-        this.enemyVsPlayer();
+        this.enemy.setScale(BOSS_SCALE);
+        this.scene.physics.add.existing(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
+        this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
+        this.scene.physics.add.collider(this.enemy as unknown as Phaser.Physics.Arcade.Sprite, this.road, () => { });
         this.bossIsTakingDamage = false;
+        this.bossFallingAnimation();
+
+        this.scene.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                this.enemyVsPlayer();
+            },
+        });
+    }
+
+    private bossFallingAnimation() {
+        // Set the initial animation
+        this.enemy.setAnimation(0, 'dang_roi', true);
+
+        this.enemy.addAnimation(0, 'dang_roi', false, 0);
+        this.enemy.addAnimation(0, 'dat_nut', false, 1.15);
+        this.enemy.addAnimation(0, 'idle', true, 0);
     }
 
     protected enemyVsPlayer() {
         this.scene.time.addEvent({
             delay: 100,
             callback: () => {
-                const enemies = this._enemyGroup.getChildren() as Phaser.GameObjects.Sprite[];
+                const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {
                     const distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.player.x, this.player.player.y);
-                    if (distance < 120) {
+                    if (distance < BOSS_ATTACK_RANGE) {
+                        this.enemy.state.timeScale = 0.5;
                         this.attackPlayer(enemy);
                     } else {
-                        if ((enemy.body as Phaser.Physics.Arcade.Body).velocity.x < 0) {
-                            enemy.setScale(-0.1, 0.1);
-                        } else {
-                            enemy.setScale(0.1);
-                        }
-                        this.chasePlayer(enemy, 100);
+                        const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
+                        this.flipEnemy(enemy, enemyBody.velocity.x < 0);
+                        this.chasePlayer(enemy, BOSS_SPEED);
                     }
                 });
             },
@@ -96,13 +111,52 @@ export class Boss extends Enemy {
         });
     }
 
+    protected attackPlayer(enemy: SpineGameObject) {
+        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 300);
+        const enemyAttackAnims = ['dash_attack', 'attack_dap', 'attack_dap2'];
+        const currentTrackEntry = enemy.state.getCurrent(0);
+        const currentAnimation = currentTrackEntry?.animation?.name;
+
+        if (!enemyAttackAnims.includes(currentAnimation)) {
+            enemy.state.setAnimation(0, Phaser.Utils.Array.GetRandom(enemyAttackAnims), false);
+            enemy.state.addListener({
+                event: () => { },
+                start: () => { },
+                interrupt: () => { },
+                end: () => { },
+                dispose: () => { },
+                complete: (trackEntry) => {
+                    if (enemyAttackAnims.includes(trackEntry.animation.name)) {
+                        enemy.state.setAnimation(0, 'idle', true);
+                        this.player.isTakingDamage = true;
+                        this.scene.time.delayedCall(100, () => {
+                            this.player.isTakingDamage = false;
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
+        this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
+
+        const currentTrackEntry = this.enemy.state.getCurrent(0);
+        const currentAnimation = currentTrackEntry?.animation?.name;
+
+        if (currentAnimation !== 'run') {
+            enemy.setAnimation(0, 'run', true);
+        }
+    }
+
     public set bossIsTakingDamage(value: boolean) {
         this._bossIsTakingDamage = value;
         if (this._bossIsTakingDamage) {
             this.bossTakeDamage(Player.instancePlayer.playerDamage);
+            this.enemy.setAnimation(0, 'hit', false);
         }
         else {
-
+            this.enemy.setAnimation(0, 'idle', true);
         }
     }
 
@@ -124,6 +178,19 @@ export class Boss extends Enemy {
         this.createBossHealthBar();
         if (this.bossHealth <= 0) {
             this.bossIsKilled = true;
+        }
+    }
+
+    protected flipEnemy(spine: SpineGameObject, flip: boolean) {
+        let body = spine.body as Phaser.Physics.Arcade.Body;
+        body.setSize(spine.width, spine.height);
+        spine.scaleX = flip ? -BOSS_SCALE : BOSS_SCALE;
+
+        if (flip) {
+            body.setOffset(spine.width - body.width, body.offset.y);
+        }
+        else {
+            body.setOffset(0, body.offset.y);
         }
     }
 }

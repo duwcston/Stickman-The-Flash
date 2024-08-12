@@ -7,3 +7,12 @@ export const MIN_SIZE_HEIGHT = 320;
 
 export const MAX_SIZE_WIDTH = 1920;
 export const MAX_SIZE_HEIGHT = 1080;
+
+export const PLAYER_SCALE = 0.1;
+export const ENEMY_SCALE = 0.1;
+export const BOSS_SCALE = 0.2;
+
+export const ENEMY_ATTACK_RANGE = 120;
+export const ENEMY_SPEED = 300;
+export const BOSS_ATTACK_RANGE = 160;
+export const BOSS_SPEED = 100;

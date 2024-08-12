@@ -1,11 +1,12 @@
 import { Enemy } from "./Enemy";
 import { Boss } from "./Boss";
+import { PLAYER_SCALE } from "../utils/Constant";
 
 export class Player {
     scene: Phaser.Scene;
     player: SpineGameObject;
     road: Phaser.GameObjects.Image;
-    swordHitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+    hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     playerHealthBar: Phaser.GameObjects.Graphics;
     creepOverlap: Phaser.Physics.Arcade.Collider;
     private static _instancePlayer: Player;
@@ -26,7 +27,7 @@ export class Player {
         this.scene = scene;
         this.road = road;
         this.createPlayer(this.scene.scale.width / 2, this.scene.scale.height / 2 + 50);
-        this.createSwordHitbox();
+        this.createHitbox();
         this._enemyKilled = 0;
 
         this._health = this._maxHealth
@@ -66,39 +67,51 @@ export class Player {
     }
 
     public createPlayer(x: number, y: number) {
-        this.player = this.scene.add.spine(x, y, 'spiderman', 'idle', true);
-        this.player.setScale(0.1);
+        this.player = this.scene.add.spine(x, y, 'spiderman');
+        this.player.setScale(PLAYER_SCALE);
         this.scene.physics.add.existing(this.player as unknown as Phaser.Physics.Arcade.Image);
+        this.isTakingDamage = false;
+        this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.road, () => {
+            // this.player.setAnimation(0, 'idle', true);
+        });
 
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         body.setCollideWorldBounds(true);
         body.setGravityY(300);
-        this.isTakingDamage = false;
-        this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.road);
+        this.setPlayerAnimations();
     }
 
-    private createSwordHitbox(): void {
-        this.swordHitbox = this.scene.add.rectangle(0, 0, 50, 50, 0xffffff, 0.5) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
-        this.scene.physics.add.existing(this.swordHitbox);
-        this.swordHitbox.visible = false;
-        this.swordHitbox.body.enable = false;
-        this.scene.physics.world.remove(this.swordHitbox.body);
+    private setPlayerAnimations() {
+        // Set the initial animation
+        this.player.setAnimation(0, 'dang_roi', true);
+
+        this.player.addAnimation(0, 'dang_roi', false, 0);
+        this.player.addAnimation(0, 'dap_dat', false, 0.75);
+        this.player.addAnimation(0, 'idle', true, 0);
+    }
+
+    private createHitbox(): void {
+        this.hitbox = this.scene.add.rectangle(0, 0, 50, 30, 0xffffff, 0.5) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+        this.scene.physics.add.existing(this.hitbox);
+        this.hitbox.visible = false;
+        this.hitbox.body.enable = false;
+        this.scene.physics.world.remove(this.hitbox.body);
     }
 
     public updateHitbox() {
-        // Update sword hitbox position based on player direction
-        this.swordHitbox.x = this.player.scaleX < 0
+        // Update hitbox position based on player direction
+        this.hitbox.x = this.player.scaleX < 0
             ? this.player.x - 42
             : this.player.x + 42;
-        this.swordHitbox.y = this.player.y - 52;
+        this.hitbox.y = this.player.y - 52;
     }
 
     public attackEnemy(): void {
         // console.log('Enemy count from player: ', Enemy.instanceEnemy.enemyGroup.countActive()); // Debugging
-        this.creepOverlap = this.scene.physics.add.overlap(this.swordHitbox, Enemy.instanceEnemy.enemyGroup, this.killEnemy, undefined, this);
+        this.creepOverlap = this.scene.physics.add.overlap(this.hitbox, Enemy.instanceEnemy.enemyGroup, this.killEnemy, undefined, this);
     }
 
-    private killEnemy(_swordHitbox: Phaser.GameObjects.GameObject, enemy: Phaser.GameObjects.GameObject) {
+    private killEnemy(_hitbox: Phaser.GameObjects.GameObject, enemy: Phaser.GameObjects.GameObject) {
         Enemy.instanceEnemy.enemyHealth -= this.playerDamage;
         // console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
         if (Enemy.instanceEnemy.enemyHealth <= 0) {
@@ -130,9 +143,9 @@ export class Player {
 
     public attackBoss() {
         this.creepOverlap.active = false;
-        const attackAnims = ['dash_attack', 'attack_dam', 'da'];
+        const attackAnims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2'];
 
-        this.scene.physics.add.overlap(this.swordHitbox, Enemy.instanceEnemy.enemyGroup, () => {
+        this.scene.physics.add.overlap(this.hitbox, Enemy.instanceEnemy.enemyGroup, () => {
             const currentTrackEntry = this.player.state.getCurrent(0);
             const currentAnimation = currentTrackEntry?.animation?.name;
 
@@ -147,5 +160,4 @@ export class Player {
             }
         }, undefined, this);
     }
-
 }

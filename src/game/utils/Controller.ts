@@ -1,4 +1,5 @@
 import { Player } from "../sprites/Player";
+import { PLAYER_SCALE } from "./Constant";
 
 export class Controller {
     scene: Phaser.Scene;
@@ -14,22 +15,18 @@ export class Controller {
     }
 
     private _flash(pointer: Phaser.Input.Pointer) {
-        const anims = ['dash_attack', 'attack_dam', 'da'];
+        const anims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2'];
         if (this.flashable) {
-            // Destroy the current Spine player and recreate it at the pointer's location
             this.player.player.destroy();
             this.player.createPlayer(pointer.worldX, pointer.worldY);
-
-            // Flip the player horizontally if the pointer is on the left side of the screen
             if (pointer.x < this.scene.scale.width / 2) {
-                this.player.player.scaleX = -0.1;
-                this.player.player.scaleY = 0.1;
+                this.flipPlayer(this.player.player, true);
             }
 
             // Set the Spine animation to 'dash_attack'
             this.player.player.setAnimation(0, Phaser.Utils.Array.GetRandom(anims), false);
-            this.player.swordHitbox.body.enable = true;
-            this.scene.physics.world.add(this.player.swordHitbox.body);
+            this.player.hitbox.body.enable = true;
+            this.scene.physics.world.add(this.player.hitbox.body);
 
             this.player.player.state.addListener({
                 event: () => { },
@@ -40,8 +37,8 @@ export class Controller {
                 complete: (entry: spine.TrackEntry) => {
                     if (anims.includes(entry.animation.name)) {
                         this.player.player.setAnimation(0, 'idle', true);
-                        this.player.swordHitbox.body.enable = false;
-                        this.scene.physics.world.remove(this.player.swordHitbox.body);
+                        this.player.hitbox.body.enable = false;
+                        this.scene.physics.world.remove(this.player.hitbox.body);
                     }
                 }
             });
@@ -54,6 +51,19 @@ export class Controller {
         }
         else {
             this.flashable = true;
+        }
+    }
+
+    private flipPlayer(spine: SpineGameObject, flip: boolean) {
+        let body = spine.body as Phaser.Physics.Arcade.Body;
+        body.setSize(spine.width, spine.height);
+        spine.scaleX = flip ? -PLAYER_SCALE : PLAYER_SCALE;
+
+        if (flip) {
+            body.setOffset(spine.width - body.width, body.offset.y);
+        }
+        else {
+            body.setOffset(0, body.offset.y);
         }
     }
 }

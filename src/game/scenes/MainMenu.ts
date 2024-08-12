@@ -22,7 +22,6 @@ export class MainMenu extends Scene {
         const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.5).setDepth(1);
         overlay.alpha = 0;
 
-        // Fade in the overlay
         this.tweens.add({
             targets: overlay,
             alpha: 0.5,
@@ -47,7 +46,6 @@ export class MainMenu extends Scene {
             color: '#ffffff'
         }).setOrigin(0.5).setInteractive().setDepth(2);
 
-        // Adding tween to the startButton
         this.tweens.add({
             targets: startButton,
             alpha: 0,

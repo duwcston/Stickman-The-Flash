@@ -62,13 +62,13 @@ export class Game extends Scene {
         this.player.updateHitbox();
         this.controller.flashOff(this.input.activePointer);
 
-        if (this.player.health <= 0 || this.boss.bossIsKilled) {
-            // this.player.player.setAnimation(0, 'death', false);
+        if (this.player.health <= 0) {
+            this.player.player.setAnimation(0, 'die', false);
             this.handleGameOver();
         }
     }
 
-    handleGameOver(): void {
+    private handleGameOver(): void {
         this.scene.pause('Game');
         this.scene.run('GameOver');
     }
