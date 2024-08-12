@@ -90,7 +90,7 @@ export class Enemy {
                 enemies.forEach((enemy) => {
                     const distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.player.x, this.player.player.y);
                     if (distance < ENEMY_ATTACK_RANGE) {
-                        this.enemy.state.timeScale = 0.5;
+                        enemy.state.timeScale = 0.5;
                         this.attackPlayer(enemy);
                     } else {
                         const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
@@ -123,7 +123,7 @@ export class Enemy {
                     if (enemyAttackAnims.includes(trackEntry.animation.name)) {
                         enemy.state.setAnimation(0, 'idle', true);
                         this.player.isTakingDamage = true;
-                        this.scene.time.delayedCall(100, () => {
+                        this.scene.time.delayedCall(50, () => {
                             this.player.isTakingDamage = false;
                         });
                     }
@@ -135,7 +135,7 @@ export class Enemy {
     protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
         this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
 
-        const currentTrackEntry = this.enemy.state.getCurrent(0);
+        const currentTrackEntry = enemy.state.getCurrent(0);
         const currentAnimation = currentTrackEntry?.animation?.name;
 
         if (currentAnimation !== 'dash') {

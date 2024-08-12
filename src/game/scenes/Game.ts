@@ -63,8 +63,27 @@ export class Game extends Scene {
         this.controller.flashOff(this.input.activePointer);
 
         if (this.player.health <= 0) {
-            this.player.player.setAnimation(0, 'die', false);
-            this.handleGameOver();
+            this.enemy.enemyGroup.clear(true, true);
+            this.player.player.setAnimation(0, 'die', false, true);
+            this.time.addEvent({
+                delay: 900,
+                callback: () => {
+                    this.handleGameOver();
+                },
+                callbackScope: this
+            });
+        }
+
+        if (Boss.instanceBoss.bossIsKilled) {
+            this.boss.enemy.setAnimation(0, 'die', false, true);
+            this.time.addEvent({
+                delay: 900,
+                callback: () => {
+                    this.scene.pause('Game');
+                    this.scene.run('GameOver');
+                },
+                callbackScope: this
+            });
         }
     }
 

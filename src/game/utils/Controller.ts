@@ -15,7 +15,7 @@ export class Controller {
     }
 
     private _flash(pointer: Phaser.Input.Pointer) {
-        const anims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2'];
+        const anims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2', 'boss_attack1', 'boss_attack2'];
         if (this.flashable) {
             this.player.player.destroy();
             this.player.createPlayer(pointer.worldX, pointer.worldY);
@@ -23,7 +23,6 @@ export class Controller {
                 this.flipPlayer(this.player.player, true);
             }
 
-            // Set the Spine animation to 'dash_attack'
             this.player.player.setAnimation(0, Phaser.Utils.Array.GetRandom(anims), false);
             this.player.hitbox.body.enable = true;
             this.scene.physics.world.add(this.player.hitbox.body);

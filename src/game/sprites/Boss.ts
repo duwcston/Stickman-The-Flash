@@ -51,7 +51,14 @@ export class Boss extends Enemy {
         this._bossIsKilled = value;
         if (this._bossIsKilled) {
             this._bossHealthBar.clear();
-            this.enemy.setAnimation(0, 'die', false);
+            this.enemy.setAnimation(0, 'die', false, true);
+        }
+    }
+
+    public set bossIsTakingDamage(value: boolean) {
+        this._bossIsTakingDamage = value;
+        if (this._bossIsTakingDamage) {
+            this.bossTakeDamage(Player.instancePlayer.playerDamage);
         }
     }
 
@@ -83,9 +90,10 @@ export class Boss extends Enemy {
     private bossFallingAnimation() {
         // Set the initial animation
         this.enemy.setAnimation(0, 'dang_roi', true);
-
+        this.player.player.setAnimation(0, 'boss_prepare_loop', true);
         this.enemy.addAnimation(0, 'dang_roi', false, 0);
-        this.enemy.addAnimation(0, 'dat_nut', false, 1.15);
+        this.enemy.addAnimation(0, 'dap_dat', false, 1.15);
+        this.enemy.addAnimation(0, 'dat_nut', false, 0);
         this.enemy.addAnimation(0, 'idle', true, 0);
     }
 
@@ -146,17 +154,6 @@ export class Boss extends Enemy {
 
         if (currentAnimation !== 'run') {
             enemy.setAnimation(0, 'run', true);
-        }
-    }
-
-    public set bossIsTakingDamage(value: boolean) {
-        this._bossIsTakingDamage = value;
-        if (this._bossIsTakingDamage) {
-            this.bossTakeDamage(Player.instancePlayer.playerDamage);
-            this.enemy.setAnimation(0, 'hit', false);
-        }
-        else {
-            this.enemy.setAnimation(0, 'idle', true);
         }
     }
 

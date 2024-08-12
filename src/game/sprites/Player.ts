@@ -59,10 +59,8 @@ export class Player {
         this._isTakingDamage = value;
         if (this._isTakingDamage) {
             this.player.setAnimation(0, 'hit', false);
+            this.player.addAnimation(0, 'idle', true, 0);
             this.takeDamage(Enemy.instanceEnemy.enemyDamage);
-        }
-        else {
-            this.player.setAnimation(0, 'idle', true);
         }
     }
 
@@ -111,15 +109,15 @@ export class Player {
         this.creepOverlap = this.scene.physics.add.overlap(this.hitbox, Enemy.instanceEnemy.enemyGroup, this.killEnemy, undefined, this);
     }
 
-    private killEnemy(_hitbox: Phaser.GameObjects.GameObject, enemy: Phaser.GameObjects.GameObject) {
+    private killEnemy(_hitbox: Phaser.GameObjects.GameObject, enemy: SpineGameObject) {
         Enemy.instanceEnemy.enemyHealth -= this.playerDamage;
         // console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
         if (Enemy.instanceEnemy.enemyHealth <= 0) {
             this._enemyKilled++;
             console.log('Enemy killed: ', this._enemyKilled);
-            enemy.destroy();
             Enemy.instanceEnemy.enemyGroup.remove(enemy);
             Enemy.instanceEnemy.enemyHealth = Enemy.instanceEnemy.enemyMaxHealth;
+            enemy.destroy();
         }
     }
 
@@ -143,21 +141,33 @@ export class Player {
 
     public attackBoss() {
         this.creepOverlap.active = false;
-        const attackAnims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2'];
+        const attackAnims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2', 'boss_attack1', 'boss_attack2'];
 
         this.scene.physics.add.overlap(this.hitbox, Enemy.instanceEnemy.enemyGroup, () => {
             const currentTrackEntry = this.player.state.getCurrent(0);
             const currentAnimation = currentTrackEntry?.animation?.name;
 
             if (attackAnims.includes(currentAnimation)) {
-                const enemy = Enemy.instanceEnemy.enemy;
+                const hitEffect = this.scene.add.graphics();
+
+                hitEffect.fillStyle(0x00ffff, 1);
+                hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 10);
+
+                this.scene.tweens.add({
+                    targets: hitEffect,
+                    alpha: 0,
+                    duration: 200,
+                    onComplete: () => {
+                        hitEffect.destroy();
+                    }
+                });
+
                 Boss.instanceBoss.bossIsTakingDamage = true;
-                enemy.state.setAnimation(0, 'hit', false);
                 this.scene.time.delayedCall(100, () => {
                     Boss.instanceBoss.bossIsTakingDamage = false;
-                    enemy.state.setAnimation(0, 'idle', true);
                 });
             }
         }, undefined, this);
     }
+
 }
