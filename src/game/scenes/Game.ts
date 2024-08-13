@@ -8,6 +8,7 @@ import { Boss } from '../sprites/Boss';
 
 export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
+    theme: Phaser.Sound.BaseSound;
     moon: Phaser.GameObjects.TileSprite;
     citybg: Phaser.GameObjects.TileSprite;
     city: Phaser.GameObjects.TileSprite;
@@ -18,7 +19,6 @@ export class Game extends Scene {
     boss: Boss;
     spawner: Spawner;
     spawnTime: number = 3000;
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor() {
         super({ key: 'Game' });
@@ -33,6 +33,9 @@ export class Game extends Scene {
         this.physics.world.setBounds(0, 0, width as number * 2, height as number);
         this.physics.world.fixedStep = true;
 
+        this.theme = this.sound.add('theme', { loop: true });
+        this.theme.play();
+
         this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon')
             .setScale(1.5, 1.5)
             .setScrollFactor(0);
@@ -44,8 +47,8 @@ export class Game extends Scene {
             .setScrollFactor(0);
 
         this.road = this.physics.add.image(width as number / 2, height as number / 2 + 100, 'road')
-            .setScale(1, 1)
-            .setScrollFactor(0)
+            .setScale(3, 1)
+            .setScrollFactor(1)
             .setSize(width as number * 2, 100)
             .setOffset(0, height as number / 2 + 80)
             .setImmovable(true)
@@ -104,6 +107,7 @@ export class Game extends Scene {
     }
 
     private handleGameOver(): void {
+        this.theme.stop();
         this.scene.pause('Game');
         this.scene.run('GameOver');
     }

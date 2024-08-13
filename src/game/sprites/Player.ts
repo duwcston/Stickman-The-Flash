@@ -9,6 +9,7 @@ export class Player {
     hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     playerHealthBar: Phaser.GameObjects.Graphics;
     creepOverlap: Phaser.Physics.Arcade.Collider;
+    hitfx: Phaser.Sound.BaseSound;
     private static _instancePlayer: Player;
 
     private _enemyKilled: number;
@@ -29,7 +30,7 @@ export class Player {
         this.createPlayer(this.scene.scale.width, this.scene.scale.height / 2 + 50);
         this.createHitbox();
         this._enemyKilled = 0;
-
+        this.hitfx = this.scene.sound.add('hit');
         this._health = this._maxHealth
         this.playerHealthBar = this.scene.add.graphics();
     }
@@ -69,16 +70,16 @@ export class Player {
         this.scene.physics.add.existing(this.player as unknown as Phaser.Physics.Arcade.Image);
         this.isTakingDamage = false;
         this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.road, () => {
-            // this.player.setAnimation(0, 'idle', true);
+            this.player.addAnimation(0, 'idle', true, 0);
         });
 
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         body.setCollideWorldBounds(true);
         body.setGravityY(300);
-        this.setPlayerAnimations();
+        this.setPlayerStartAnimations();
     }
 
-    private setPlayerAnimations() {
+    private setPlayerStartAnimations() {
         // Set the initial animation
         this.player.setAnimation(0, 'dang_roi', true);
 
@@ -110,11 +111,12 @@ export class Player {
 
     private killEnemy(_hitbox: Phaser.GameObjects.GameObject, enemy: SpineGameObject) {
         Enemy.instanceEnemy.enemyHealth -= this.playerDamage;
+        this.hitfx.play();
         // console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
         if (Enemy.instanceEnemy.enemyHealth <= 0) {
             this._enemyKilled++;
             console.log('Enemy killed: ', this._enemyKilled);
-            Enemy.instanceEnemy.enemyGroup.remove(enemy);
+            Enemy.instanceEnemy.enemyGroup.remove(enemy as unknown as Phaser.Physics.Arcade.Sprite);
             Enemy.instanceEnemy.enemyHealth = Enemy.instanceEnemy.enemyMaxHealth;
             enemy.destroy();
         }
@@ -151,7 +153,7 @@ export class Player {
 
                 hitEffect.fillStyle(0x00ffff, 1);
                 hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 10);
-
+                this.hitfx.play();
                 this.scene.tweens.add({
                     targets: hitEffect,
                     alpha: 0,
@@ -168,5 +170,4 @@ export class Player {
             }
         }, undefined, this);
     }
-
 }

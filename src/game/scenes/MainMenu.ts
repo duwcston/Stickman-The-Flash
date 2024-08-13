@@ -44,7 +44,7 @@ export class MainMenu extends Scene {
             .setScrollFactor(0);
 
         this.road = this.physics.add.image(width as number / 2, height as number / 2 + 100, 'road')
-            .setScale(1, 1)
+            .setScale(3, 1)
             .setScrollFactor(0)
             .setSize(width as number, 100)
             .setOffset(0, height as number / 2 + 80)

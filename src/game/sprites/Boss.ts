@@ -3,6 +3,7 @@ import { Enemy } from "./Enemy";
 import { BOSS_ATTACK_RANGE, BOSS_SPEED, BOSS_SCALE } from "../utils/Constant";
 
 export class Boss extends Enemy {
+    bossComing: Phaser.Sound.BaseSound;
     private static _instanceBoss: Boss;
     private _bossDamage: number = 30;
     private _bossHealth: number;
@@ -21,6 +22,7 @@ export class Boss extends Enemy {
         Boss._instanceBoss = this;
         this._bossHealth = this._bossMaxHealth;
         this._bossHealthBar = this.scene.add.graphics();
+        this.bossComing = this.scene.sound.add('boss_coming', { volume: 0.3, loop: false, seek: 5 });
     }
 
     get bossDamage() {
@@ -51,7 +53,6 @@ export class Boss extends Enemy {
         this._bossIsKilled = value;
         if (this._bossIsKilled) {
             this._bossHealthBar.clear();
-            this.enemy.setAnimation(0, 'die', false, true);
         }
     }
 
@@ -95,6 +96,7 @@ export class Boss extends Enemy {
         this.enemy.addAnimation(0, 'dap_dat', false, 1.15);
         this.enemy.addAnimation(0, 'dat_nut', false, 0);
         this.enemy.addAnimation(0, 'idle', true, 0);
+        this.bossComing.play();
     }
 
     protected enemyVsPlayer() {
@@ -121,7 +123,7 @@ export class Boss extends Enemy {
 
     protected attackPlayer(enemy: SpineGameObject) {
         (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 300);
-        const enemyAttackAnims = ['dash_attack', 'attack_dap', 'attack_dap2'];
+        const enemyAttackAnims = ['attack_dap', 'attack_dap2'];
         const currentTrackEntry = enemy.state.getCurrent(0);
         const currentAnimation = currentTrackEntry?.animation?.name;
 
@@ -175,6 +177,7 @@ export class Boss extends Enemy {
         this.createBossHealthBar();
         if (this.bossHealth <= 0) {
             this.bossIsKilled = true;
+            this.enemy.setAnimation(0, 'die', false, true);
         }
     }
 

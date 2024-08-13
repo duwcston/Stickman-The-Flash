@@ -9,8 +9,8 @@ export class Preloader extends Scene {
         const { width, height } = this.sys.game.config;
 
         this.add.image(width as number / 2, height as number / 2, 'moon');
-        this.add.image(width as number / 2, height as number / 2, 'city');
         this.add.image(width as number / 2, height as number / 2, 'citybg');
+        this.add.image(width as number / 2, height as number / 2, 'city');
 
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
@@ -33,6 +33,14 @@ export class Preloader extends Scene {
         //  Load the Spine animation data
         this.load.spine('spiderman', 'spine/spider_man_epic1.json', 'spine/spider_man_epic1.atlas');
         this.load.spine('enemy', 'spine/enemy1.json', 'spine/enemy1.atlas');
+
+        // Load the audio assets
+        this.load.audio('theme', 'audio/funky-loop-40283.mp3');
+        this.load.audio('swoosh', 'audio/swoosh.mp3');
+        this.load.audio('enemy_punch', 'audio/enemy-punch.mp3');
+        this.load.audio('hit', 'audio/punch-fx.mp3')
+        this.load.audio('ouch', 'audio/ouch.mp3')
+        this.load.audio('boss_coming', 'audio/boss-falling.mp3');
     }
 
     create() {

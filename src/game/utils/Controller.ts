@@ -5,12 +5,14 @@ export class Controller {
     scene: Phaser.Scene;
     player: Player;
     road: Phaser.GameObjects.Image;
+    swoosh: Phaser.Sound.BaseSound;
     flashable: boolean = true;
 
     constructor(scene: Phaser.Scene, player: Player, road: Phaser.GameObjects.Image) {
         this.scene = scene;
         this.player = player;
         this.road = road;
+        this.swoosh = this.scene.sound.add('swoosh');
         this.scene.input.on('pointerdown', this._flash, this);
     }
 
@@ -22,7 +24,7 @@ export class Controller {
             if (pointer.x < this.scene.scale.width / 2) {
                 this.flipPlayer(this.player.player, true);
             }
-
+            this.swoosh.play();
             this.player.player.setAnimation(0, Phaser.Utils.Array.GetRandom(anims), false);
             this.player.hitbox.body.enable = true;
             this.scene.physics.world.add(this.player.hitbox.body);
@@ -35,7 +37,12 @@ export class Controller {
                 dispose: () => { },
                 complete: (entry: spine.TrackEntry) => {
                     if (anims.includes(entry.animation.name)) {
-                        this.player.player.setAnimation(0, 'idle', true);
+                        if (this.player.player.y < this.scene.scale.height - 120) {
+                            this.player.player.setAnimation(0, 'dang_roi', true);
+                        }
+                        else {
+                            this.player.player.setAnimation(0, 'idle', true);
+                        }
                         this.player.hitbox.body.enable = false;
                         this.scene.physics.world.remove(this.player.hitbox.body);
                     }
