@@ -57,12 +57,12 @@ export class Enemy {
     }
 
     private getRandomX() {
-        const x = [0, this.scene.scale.width];
+        const x = [0, this.scene.scale.width * 2];
         return x[Math.floor(Math.random() * x.length)];
     }
 
     private getRandomY() {
-        return Phaser.Math.Between(0, this.scene.scale.height - 100);
+        return Phaser.Math.Between(this.scene.scale.height / 2, this.scene.scale.height - 100);
     }
 
     private createEnemyImage() {
@@ -84,7 +84,7 @@ export class Enemy {
 
     protected enemyVsPlayer() {
         this.scene.time.addEvent({
-            delay: 100, 
+            delay: 100,
             callback: () => {
                 const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {

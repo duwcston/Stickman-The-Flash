@@ -12,13 +12,13 @@ export class Game extends Scene {
     citybg: Phaser.GameObjects.TileSprite;
     city: Phaser.GameObjects.TileSprite;
     road: Phaser.GameObjects.Image;
-    // road: Phaser.GameObjects.TileSprite;
     player: Player;
     controller: Controller;
     enemy: Enemy;
     boss: Boss;
     spawner: Spawner;
-    spawnTime: number = 5000;
+    spawnTime: number = 3000;
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor() {
         super({ key: 'Game' });
@@ -29,18 +29,32 @@ export class Game extends Scene {
 
         this.camera = this.cameras.main;
         this.camera.fadeIn(1000, 0, 0, 0);
+        this.camera.setBounds(0, 0, width as number * 2, height as number);
+        this.physics.world.setBounds(0, 0, width as number * 2, height as number);
+        this.physics.world.fixedStep = true;
 
-        this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon').setScale(1.5);
-        this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg').setScale(1.5);
-        this.city = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'city').setScale(1.5);
+        this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon')
+            .setScale(1.5, 1.5)
+            .setScrollFactor(0);
+        this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg')
+            .setScale(1.5, 1.5)
+            .setScrollFactor(0);
+        this.city = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'city')
+            .setScale(1.5, 1.5)
+            .setScrollFactor(0);
 
         this.road = this.physics.add.image(width as number / 2, height as number / 2 + 100, 'road')
-            .setSize(width as number, 100)
+            .setScale(1, 1)
+            .setScrollFactor(0)
+            .setSize(width as number * 2, 100)
             .setOffset(0, height as number / 2 + 80)
             .setImmovable(true)
             .refreshBody();
 
         this.player = new Player(this, this.road);
+        this.player.createPlayerHealthBar();
+
+        this.camera.centerOn(this.player.player.x, this.player.player.y);
 
         this.enemy = new Enemy(this, this.player, this.road);
         this.boss = new Boss(this, this.player, this.road);
@@ -58,6 +72,8 @@ export class Game extends Scene {
     update(): void {
         this.citybg.tilePositionX += 0.3;
         this.city.tilePositionX += 0.5;
+
+        this.camera.pan(this.player.player.x, this.player.player.y, 3000, 'Power2', true);
 
         this.player.updateHitbox();
         this.controller.flashOff(this.input.activePointer);

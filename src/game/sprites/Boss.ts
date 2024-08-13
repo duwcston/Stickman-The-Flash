@@ -6,7 +6,7 @@ export class Boss extends Enemy {
     private static _instanceBoss: Boss;
     private _bossDamage: number = 30;
     private _bossHealth: number;
-    private _bossMaxHealth: number = 500;
+    private _bossMaxHealth: number = 1000;
     private _bossHealthBar: Phaser.GameObjects.Graphics;
     private _bossIsTakingDamage: boolean;
     private _bossIsKilled: boolean;
@@ -71,7 +71,7 @@ export class Boss extends Enemy {
     }
 
     protected createBossImage() {
-        this.enemy = this.scene.add.spine(this.scene.scale.width / 2, 0, 'enemy');
+        this.enemy = this.scene.add.spine(this.scene.scale.width, 0, 'enemy');
         this.enemy.setScale(BOSS_SCALE);
         this.scene.physics.add.existing(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
         this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
@@ -164,10 +164,10 @@ export class Boss extends Enemy {
 
         this._bossHealthBar.clear();
         this._bossHealthBar.fillStyle(0xff0000);
-        this._bossHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 50 + barHeight, barWidth, barHeight);
+        this._bossHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 50 + barHeight, barWidth, barHeight).setScrollFactor(0);
 
         this._bossHealthBar.fillStyle(0xffff00);
-        this._bossHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 50 + barHeight, barWidth * healthRatio, barHeight);
+        this._bossHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 50 + barHeight, barWidth * healthRatio, barHeight).setScrollFactor(0);
     }
 
     private bossTakeDamage(amount: number) {

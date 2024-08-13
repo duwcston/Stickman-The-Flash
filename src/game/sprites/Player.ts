@@ -26,13 +26,12 @@ export class Player {
 
         this.scene = scene;
         this.road = road;
-        this.createPlayer(this.scene.scale.width / 2, this.scene.scale.height / 2 + 50);
+        this.createPlayer(this.scene.scale.width, this.scene.scale.height / 2 + 50);
         this.createHitbox();
         this._enemyKilled = 0;
 
         this._health = this._maxHealth
         this.playerHealthBar = this.scene.add.graphics();
-        this.createPlayerHealthBar();
     }
 
     get enemyKilled() {
@@ -121,17 +120,17 @@ export class Player {
         }
     }
 
-    private createPlayerHealthBar() {
+    public createPlayerHealthBar() {
         const barWidth = 700;
         const barHeight = 15;
         const healthRatio = this.health / this.maxHealth;
 
         this.playerHealthBar.clear();
         this.playerHealthBar.fillStyle(0xff0000);
-        this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth, barHeight);
+        this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth, barHeight).setScrollFactor(0);
 
         this.playerHealthBar.fillStyle(0x00ff00);
-        this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth * healthRatio, barHeight);
+        this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth * healthRatio, barHeight).setScrollFactor(0);
     }
 
     private takeDamage(amount: number) {

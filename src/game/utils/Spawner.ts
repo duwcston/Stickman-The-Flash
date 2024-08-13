@@ -21,7 +21,7 @@ export class Spawner {
                 const enemyKilled = Player.instancePlayer.enemyKilled;
                 if (enemyKilled >= 3) {
                     console.log('More enemy spawned');
-                    this.updateSpawnTime(2000);
+                    this.updateSpawnTime(1000);
                 }
                 else {
                     this.spawnCreep();
@@ -64,9 +64,6 @@ export class Spawner {
     }
 
     private destroyAllCreeps() {
-        const enemies = Enemy.instanceEnemy.enemyGroup.getChildren() as Phaser.GameObjects.Sprite[];
-        enemies.forEach((enemy) => {
-            enemy.destroy();
-        });
+        Enemy.instanceEnemy.enemyGroup.clear(true, true);
     }
 }

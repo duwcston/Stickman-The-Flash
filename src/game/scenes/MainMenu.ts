@@ -19,7 +19,7 @@ export class MainMenu extends Scene {
 
         this.camera = this.cameras.main;
 
-        const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.5).setDepth(1);
+        const overlay = this.add.rectangle(width, height / 2, width, height, 0x000000, 0.5).setDepth(1);
         overlay.alpha = 0;
 
         this.tweens.add({
@@ -29,11 +29,23 @@ export class MainMenu extends Scene {
             ease: 'Power2'
         });
 
-        this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon').setScale(1.5);
-        this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg').setScale(1.5);
-        this.city = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'city').setScale(1.5);
+        this.camera.setBounds(0, 0, width as number * 2, height as number);
+        this.physics.world.setBounds(0, 0, width as number * 2, height as number);
+        this.physics.world.fixedStep = true;
+
+        this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon')
+            .setScale(1.5, 1.5)
+            .setScrollFactor(0);
+        this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg')
+            .setScale(1.5, 1.5)
+            .setScrollFactor(0);
+        this.city = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'city')
+            .setScale(1.5, 1.5)
+            .setScrollFactor(0);
 
         this.road = this.physics.add.image(width as number / 2, height as number / 2 + 100, 'road')
+            .setScale(1, 1)
+            .setScrollFactor(0)
             .setSize(width as number, 100)
             .setOffset(0, height as number / 2 + 80)
             .setImmovable(true)
@@ -41,7 +53,7 @@ export class MainMenu extends Scene {
 
         this.player = new Player(this, this.road);
 
-        const startButton = this.add.text(width / 2, height / 2 - 50, 'Press ANY button to start', {
+        const startButton = this.add.text(width, height / 2 - 50, 'Press ANY button to start', {
             fontSize: '48px',
             color: '#ffffff'
         }).setOrigin(0.5).setInteractive().setDepth(2);
@@ -66,5 +78,6 @@ export class MainMenu extends Scene {
     update(): void {
         this.citybg.tilePositionX += 0.3;
         this.city.tilePositionX += 0.5;
+        this.camera.startFollow(this.player.player, true, 0.01, 0.01);
     }
 }
