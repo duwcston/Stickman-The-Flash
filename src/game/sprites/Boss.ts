@@ -58,21 +58,21 @@ export class Boss extends Enemy {
 
     public set bossIsTakingDamage(value: boolean) {
         this._bossIsTakingDamage = value;
-        if (this._bossIsTakingDamage) {
+        if ((this._bossIsTakingDamage) && (this._bossHealth > 0)) {
             this.bossTakeDamage(Player.instancePlayer.playerDamage);
         }
     }
 
     public spawnBoss() {
-        this.createBossImage();
+        this.createBossImage(this.scene.scale.width, 0);
         this.createBossHealthBar();
         Enemy.instanceEnemy.enemyDamage = this.bossDamage;
         Enemy.instanceEnemy.enemyHealth = this.bossMaxHealth;
         this.player.attackBoss();
     }
 
-    protected createBossImage() {
-        this.enemy = this.scene.add.spine(this.scene.scale.width, 0, 'enemy');
+    protected createBossImage(x: number, y: number) {
+        this.enemy = this.scene.add.spine(x, y, 'enemy');
         this.enemy.setScale(BOSS_SCALE);
         this.scene.physics.add.existing(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
         this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
@@ -81,7 +81,7 @@ export class Boss extends Enemy {
         this.bossFallingAnimation();
 
         this.scene.time.addEvent({
-            delay: 2000,
+            delay: 2100,
             callback: () => {
                 this.enemyVsPlayer();
             },
@@ -94,7 +94,7 @@ export class Boss extends Enemy {
         this.player.player.setAnimation(0, 'boss_prepare_loop', true);
         this.enemy.addAnimation(0, 'dang_roi', false, 0);
         this.enemy.addAnimation(0, 'dap_dat', false, 1.15);
-        this.enemy.addAnimation(0, 'dat_nut', false, 0);
+        this.enemy.addAnimation(0, 'dat_nut', false, 0.1);
         this.enemy.addAnimation(0, 'idle', true, 0);
         this.bossComing.play();
     }
@@ -106,13 +106,18 @@ export class Boss extends Enemy {
                 const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {
                     const distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.player.x, this.player.player.y);
-                    if (distance < BOSS_ATTACK_RANGE) {
-                        this.enemy.state.timeScale = 0.5;
-                        this.attackPlayer(enemy);
-                    } else {
-                        const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
-                        this.flipEnemy(enemy, enemyBody.velocity.x < 0);
-                        this.chasePlayer(enemy, BOSS_SPEED);
+                    if (this.bossHealth > 0) {
+                        if (distance <= BOSS_ATTACK_RANGE) {
+                            this.enemy.state.timeScale = 0.5;
+                            this.attackPlayer(enemy);
+                        } else {
+                            const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
+                            this.flipEnemy(enemy, enemyBody.velocity.x < 0);
+                            this.chasePlayer(enemy, BOSS_SPEED);
+                        }
+                    }
+                    else {
+
                     }
                 });
             },
@@ -122,7 +127,7 @@ export class Boss extends Enemy {
     }
 
     protected attackPlayer(enemy: SpineGameObject) {
-        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 300);
+        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 0);
         const enemyAttackAnims = ['attack_dap', 'attack_dap2'];
         const currentTrackEntry = enemy.state.getCurrent(0);
         const currentAnimation = currentTrackEntry?.animation?.name;
@@ -150,13 +155,7 @@ export class Boss extends Enemy {
 
     protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
         this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
-
-        const currentTrackEntry = this.enemy.state.getCurrent(0);
-        const currentAnimation = currentTrackEntry?.animation?.name;
-
-        if (currentAnimation !== 'run') {
-            enemy.setAnimation(0, 'run', true);
-        }
+        enemy.setAnimation(0, 'run', false, true);
     }
 
     private createBossHealthBar() {
@@ -177,7 +176,6 @@ export class Boss extends Enemy {
         this.createBossHealthBar();
         if (this.bossHealth <= 0) {
             this.bossIsKilled = true;
-            this.enemy.setAnimation(0, 'die', false, true);
         }
     }
 

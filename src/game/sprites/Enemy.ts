@@ -26,7 +26,9 @@ export class Enemy {
         this.punchPlayer = this.scene.sound.add('enemy_punch');
         this._enemyHealth = this._enemyMaxHealth;
         this._enemyGroup = this.scene.physics.add.group({
-            gravityY: 500
+            gravityY: 500,
+            collideWorldBounds: true,
+            allowGravity: true
         });
     }
 
@@ -72,6 +74,11 @@ export class Enemy {
         }
         this.scene.physics.add.collider(this.enemy as unknown as Phaser.Physics.Arcade.Sprite, this.road);
         this._enemyGroup.add(this.enemy as unknown as Phaser.Physics.Arcade.Sprite);
+
+        const enemyBody = this.enemy.body as Phaser.Physics.Arcade.Body;
+        enemyBody.setCollideWorldBounds(true, 1, 0.5, true);
+
+        Enemy.instanceEnemy.enemyHealth = Enemy.instanceEnemy.enemyMaxHealth;
         this.enemyVsPlayer();
         // console.log('Enemy spawned', this._enemyGroup.countActive()); // Debugging
     }
@@ -86,14 +93,15 @@ export class Enemy {
             callback: () => {
                 const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {
-                    const distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.player.x, this.player.player.y);
-                    if (distance < ENEMY_ATTACK_RANGE) {
-                        // enemy.state.timeScale = 0.5;
-                        this.attackPlayer(enemy);
-                    } else {
-                        const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
-                        this.flipEnemy(enemy, enemyBody.velocity.x < 0);
-                        this.chasePlayer(enemy, ENEMY_SPEED);
+                    if (Enemy.instanceEnemy.enemyHealth > 0) {
+                        const distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.player.x, this.player.player.y);
+                        if (distance <= ENEMY_ATTACK_RANGE) {
+                            this.attackPlayer(enemy);
+                        } else {
+                            const enemyBody = enemy.body as Phaser.Physics.Arcade.Body;
+                            this.flipEnemy(enemy, enemyBody.velocity.x < 0);
+                            this.chasePlayer(enemy, ENEMY_SPEED);
+                        }
                     }
                 });
             },
@@ -103,8 +111,8 @@ export class Enemy {
     }
 
     protected attackPlayer(enemy: SpineGameObject) {
-        // Ensure the enemy stops any current movement
-        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 300);
+        // Ensure the enemy stops when attacking
+        (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(0, 0);
         const enemyAttackAnims = ['dash_attack', 'attack_dam', 'attack_dam2', 'da', 'da2'];
         const currentTrackEntry = enemy.state.getCurrent(0);
         const currentAnimation = currentTrackEntry?.animation?.name;
@@ -133,7 +141,7 @@ export class Enemy {
 
     protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
         this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
-        if (enemy.y < this.player.player.y - 20) {
+        if (enemy.y < this.player.player.y - 40) {
             enemy.setAnimation(0, 'dang_roi', true);
         }
         else {

@@ -13,6 +13,7 @@ export class Game extends Scene {
     citybg: Phaser.GameObjects.TileSprite;
     city: Phaser.GameObjects.TileSprite;
     road: Phaser.GameObjects.Image;
+    // road: Phaser.GameObjects.TileSprite;
     player: Player;
     controller: Controller;
     enemy: Enemy;
@@ -83,9 +84,11 @@ export class Game extends Scene {
 
         if (this.player.health <= 0) {
             this.enemy.enemyGroup.clear(true, true);
+            this.player.player.timeScale = 0.35;
             this.player.player.setAnimation(0, 'die', false, true);
+            this.camera.zoomTo(2.5, 2400);
             this.time.addEvent({
-                delay: 900,
+                delay: 2700,
                 callback: () => {
                     this.handleGameOver();
                 },
@@ -95,9 +98,26 @@ export class Game extends Scene {
 
         if (Boss.instanceBoss.bossIsKilled) {
             this.boss.enemy.setAnimation(0, 'die', false, true);
+
+            // // Knockout effect: Create a white flash
+            // const flash = this.add.graphics();
+            // flash.fillStyle(0xffffff, 1);
+            // flash.fillRect(this.boss.enemy.x - this.boss.enemy.width / 2, this.boss.enemy.y - this.boss.enemy.height / 2, this.boss.enemy.width, this.boss.enemy.height);
+            // flash.alpha = 0;
+            // this.tweens.add({
+            //     targets: flash,
+            //     alpha: 0.5,
+            //     duration: 100,
+            //     ease: 'Linear',
+            //     onComplete: () => {
+            //         flash.destroy();
+            //     }
+            // });
+
             this.time.addEvent({
-                delay: 900,
+                delay: 1800,
                 callback: () => {
+                    this.theme.stop();
                     this.scene.pause('Game');
                     this.scene.run('GameOver');
                 },

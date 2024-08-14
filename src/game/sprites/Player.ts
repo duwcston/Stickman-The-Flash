@@ -57,7 +57,7 @@ export class Player {
 
     public set isTakingDamage(value: boolean) {
         this._isTakingDamage = value;
-        if (this._isTakingDamage) {
+        if ((this._isTakingDamage) && (this._health > 0)) {
             this.player.setAnimation(0, 'hit', false);
             this.player.addAnimation(0, 'idle', true, 0);
             this.takeDamage(Enemy.instanceEnemy.enemyDamage);
@@ -82,7 +82,6 @@ export class Player {
     private setPlayerStartAnimations() {
         // Set the initial animation
         this.player.setAnimation(0, 'dang_roi', true);
-
         this.player.addAnimation(0, 'dang_roi', false, 0);
         this.player.addAnimation(0, 'dap_dat', false, 0.75);
         this.player.addAnimation(0, 'idle', true, 0);
@@ -117,8 +116,14 @@ export class Player {
             this._enemyKilled++;
             console.log('Enemy killed: ', this._enemyKilled);
             Enemy.instanceEnemy.enemyGroup.remove(enemy as unknown as Phaser.Physics.Arcade.Sprite);
-            Enemy.instanceEnemy.enemyHealth = Enemy.instanceEnemy.enemyMaxHealth;
-            enemy.destroy();
+            const knockbackX = this.player.x < enemy.x ? 1000 : -1000;
+            const knockbackY = -700;
+            (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(knockbackX, knockbackY);
+
+            enemy.setAnimation(0, 'die', false, true);
+            this.scene.time.delayedCall(500, () => {
+                enemy.destroy();
+            })
         }
     }
 

@@ -52,7 +52,7 @@ export class Controller {
     }
 
     public flashOff(pointer: Phaser.Input.Pointer) {
-        if (pointer.y > this.scene.scale.height - 80) {
+        if ((pointer.y > this.scene.scale.height - 80) || this.player.health <= 0) {
             this.flashable = false;
         }
         else {
