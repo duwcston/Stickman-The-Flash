@@ -8,9 +8,9 @@ export class Preloader extends Scene {
     init() {
         const { width, height } = this.sys.game.config;
 
-        this.add.image(width as number / 2, height as number / 2, 'moon');
-        this.add.image(width as number / 2, height as number / 2, 'citybg');
-        this.add.image(width as number / 2, height as number / 2, 'city');
+        this.add.image(width as number / 2, height as number / 2, 'moon').setScale(1.5, 1.5).setScrollFactor(0);
+        this.add.image(width as number / 2, height as number / 2, 'citybg').setScale(1.5, 1.5).setScrollFactor(0);
+        this.add.image(width as number / 2, height as number / 2, 'city').setScale(1.5, 1.5).setScrollFactor(0);
 
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
@@ -48,7 +48,8 @@ export class Preloader extends Scene {
         //  For example, you can define global animations here, so we can use them in other scenes.
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        // this.scene.start('MainMenu');
-        this.scene.start('Game'); //Debugging
+        this.scene.start('MainMenu');
+        // this.scene.start('Game'); //Debugging
+
     }
 }

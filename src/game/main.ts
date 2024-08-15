@@ -2,7 +2,7 @@ import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
-import { SIZE_WIDTH_SCREEN, SIZE_HEIGHT_SCREEN } from './utils/Constant';
+import { SIZE_WIDTH_SCREEN, SIZE_HEIGHT_SCREEN, MIN_SIZE_WIDTH, MIN_SIZE_HEIGHT, MAX_SIZE_WIDTH, MAX_SIZE_HEIGHT } from './utils/Constant';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import 'phaser/plugins/spine/dist/SpinePlugin';
@@ -13,6 +13,14 @@ const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
     width: SIZE_WIDTH_SCREEN,
     height: SIZE_HEIGHT_SCREEN,
+    min: {
+        width: MIN_SIZE_WIDTH,
+        height: MIN_SIZE_HEIGHT
+    },
+    max: {
+        width: MAX_SIZE_WIDTH,
+        height: MAX_SIZE_HEIGHT
+    },
     parent: 'game-container',
     backgroundColor: '#1c1c1c',
     physics: {

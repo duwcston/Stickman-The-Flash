@@ -30,7 +30,7 @@ export class Player {
         this.createPlayer(this.scene.scale.width, this.scene.scale.height / 2 + 50);
         this.createHitbox();
         this._enemyKilled = 0;
-        this.hitfx = this.scene.sound.add('hit');
+        this.hitfx = this.scene.sound.add('hit', { volume: 0.5 });
         this._health = this._maxHealth
         this.playerHealthBar = this.scene.add.graphics();
     }

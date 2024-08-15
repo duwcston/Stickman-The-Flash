@@ -89,7 +89,7 @@ export class Enemy {
 
     protected enemyVsPlayer() {
         this.scene.time.addEvent({
-            delay: 100,
+            delay: 10,
             callback: () => {
                 const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {

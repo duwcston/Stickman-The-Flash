@@ -34,7 +34,7 @@ export class Game extends Scene {
         this.physics.world.setBounds(0, 0, width as number * 2, height as number);
         this.physics.world.fixedStep = true;
 
-        this.theme = this.sound.add('theme', { loop: true });
+        this.theme = this.sound.add('theme', { loop: true, volume: 0.5 });
         this.theme.play();
 
         this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon')
