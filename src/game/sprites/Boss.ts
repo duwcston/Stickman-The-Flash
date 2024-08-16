@@ -1,6 +1,6 @@
 import { Player } from "./Player";
 import { Enemy } from "./Enemy";
-import { BOSS_ATTACK_RANGE, BOSS_SPEED, BOSS_SCALE } from "../utils/Constant";
+import { BOSS_ATTACK_RANGE, BOSS_SPEED, BOSS_SCALE } from "../enums/Constant";
 
 export class Boss extends Enemy {
     bossComing: Phaser.Sound.BaseSound;
@@ -52,6 +52,7 @@ export class Boss extends Enemy {
     set bossIsKilled(value: boolean) {
         this._bossIsKilled = value;
         if (this._bossIsKilled) {
+            this.player.player.timeScale = 0.1;
             this._bossHealthBar.clear();
         }
     }
@@ -188,7 +189,7 @@ export class Boss extends Enemy {
 
     protected flipEnemy(spine: SpineGameObject, flip: boolean) {
         let body = spine.body as Phaser.Physics.Arcade.Body;
-        body.setSize(spine.width, spine.height);
+        body.setSize(spine.width - 50, spine.height);
         spine.scaleX = flip ? -BOSS_SCALE : BOSS_SCALE;
 
         if (flip) {

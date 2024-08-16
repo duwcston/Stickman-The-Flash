@@ -47,7 +47,7 @@ export class MainMenu extends Scene {
             .setScale(3, 1)
             .setScrollFactor(0)
             .setSize(width as number, 100)
-            .setOffset(0, height as number / 2 + 80)
+            .setOffset(0, height as number / 2 + 90)
             .setImmovable(true)
             .refreshBody();
 

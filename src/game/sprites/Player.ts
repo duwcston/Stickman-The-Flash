@@ -1,6 +1,6 @@
 import { Enemy } from "./Enemy";
 import { Boss } from "./Boss";
-import { PLAYER_SCALE } from "../utils/Constant";
+import { PLAYER_SCALE } from "../enums/Constant";
 
 export class Player {
     scene: Phaser.Scene;
@@ -88,7 +88,7 @@ export class Player {
     }
 
     private createHitbox(): void {
-        this.hitbox = this.scene.add.rectangle(0, 0, 50, 30, 0xffffff, 0.5) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+        this.hitbox = this.scene.add.rectangle(0, 0, 60, 30, 0xffffff, 0.5) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
         this.scene.physics.add.existing(this.hitbox);
         this.hitbox.visible = false;
         this.hitbox.body.enable = false;
@@ -98,9 +98,9 @@ export class Player {
     public updateHitbox() {
         // Update hitbox position based on player direction
         this.hitbox.x = this.player.scaleX < 0
-            ? this.player.x - 42
-            : this.player.x + 42;
-        this.hitbox.y = this.player.y - 52;
+            ? this.player.x - 45
+            : this.player.x + 45;
+        this.hitbox.y = this.player.y - 55;
     }
 
     public attackEnemy(): void {
@@ -121,7 +121,7 @@ export class Player {
             (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(knockbackX, knockbackY);
 
             enemy.setAnimation(0, 'die', false, true);
-            this.scene.time.delayedCall(500, () => {
+            this.scene.time.delayedCall(400, () => {
                 enemy.destroy();
             })
         }
@@ -133,11 +133,12 @@ export class Player {
         const healthRatio = this.health / this.maxHealth;
 
         this.playerHealthBar.clear();
-        this.playerHealthBar.fillStyle(0xff0000);
+        this.playerHealthBar.fillStyle(0xff0000); // Red bar
         this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth, barHeight).setScrollFactor(0);
 
-        this.playerHealthBar.fillStyle(0x00ff00);
+        this.playerHealthBar.fillStyle(0x00ff00); // Green bar
         this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth * healthRatio, barHeight).setScrollFactor(0);
+
     }
 
     private takeDamage(amount: number) {
@@ -157,6 +158,8 @@ export class Player {
                 const hitEffect = this.scene.add.graphics();
 
                 hitEffect.fillStyle(0x00ffff, 1);
+                hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 5);
+                hitEffect.fillStyle(0x24a3ff, 0.5);
                 hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 10);
                 // this.hitfx.play();
                 this.scene.tweens.add({

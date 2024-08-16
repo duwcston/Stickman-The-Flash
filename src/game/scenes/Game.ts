@@ -51,7 +51,7 @@ export class Game extends Scene {
             .setScale(4.5, 1)
             .setScrollFactor(1)
             .setSize(width as number * 2, 100)
-            .setOffset(0, height as number / 2 + 80)
+            .setOffset(0, height as number / 2 + 90)
             .setImmovable(true)
             .refreshBody();
 
@@ -97,9 +97,11 @@ export class Game extends Scene {
         }
 
         if (Boss.instanceBoss.bossIsKilled) {
+            this.boss.enemy.timeScale = 0.35;
             this.boss.enemy.setAnimation(0, 'die', false, true);
+            this.camera.zoomTo(2.5, 2400);
             this.time.addEvent({
-                delay: 1800,
+                delay: 2700,
                 callback: () => {
                     this.theme.stop();
                     this.scene.pause('Game');

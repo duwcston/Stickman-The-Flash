@@ -1,4 +1,4 @@
-import { ENEMY_ATTACK_RANGE, ENEMY_SPEED, ENEMY_SCALE } from "../utils/Constant";
+import { ENEMY_ATTACK_RANGE, ENEMY_SPEED, ENEMY_SCALE } from "../enums/Constant";
 import { Player } from "./Player";
 
 export class Enemy {

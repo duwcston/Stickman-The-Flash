@@ -1,9 +1,11 @@
 import { Player } from "../sprites/Player";
-import { PLAYER_SCALE } from "./Constant";
+import { Boss } from "../sprites/Boss";
+import { PLAYER_SCALE } from "../enums/Constant";
 
 export class Controller {
     scene: Phaser.Scene;
     player: Player;
+    boss: Boss;
     road: Phaser.GameObjects.Image;
     swoosh: Phaser.Sound.BaseSound;
     flashable: boolean = true;
@@ -52,7 +54,7 @@ export class Controller {
     }
 
     public flashOff(pointer: Phaser.Input.Pointer) {
-        if ((pointer.y > this.scene.scale.height - 80) || this.player.health <= 0) {
+        if ((pointer.y > this.scene.scale.height - 80) || this.player.health <= 0 || Boss.instanceBoss.bossIsKilled) {
             this.flashable = false;
         }
         else {

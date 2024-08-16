@@ -38,7 +38,7 @@ export class Spawner {
             delay: newInterval,
             callback: () => {
                 const enemyKilled = Player.instancePlayer.enemyKilled;
-                if (enemyKilled >= 10) {
+                if (enemyKilled >= 15) {
                     console.log('Boss spawned');
                     this.destroyAllCreeps();
                     this.spawnBoss();
