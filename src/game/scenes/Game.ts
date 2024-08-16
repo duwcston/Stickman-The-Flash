@@ -38,17 +38,17 @@ export class Game extends Scene {
         this.theme.play();
 
         this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon')
-            .setScale(1.5, 1.5)
+            .setScale(2.5, 1.5)
             .setScrollFactor(0);
         this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg')
-            .setScale(1.5, 1.5)
+            .setScale(2.5, 1.5)
             .setScrollFactor(0);
         this.city = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'city')
-            .setScale(1.5, 1.5)
+            .setScale(2.5, 1.5)
             .setScrollFactor(0);
 
-        this.road = this.physics.add.image(width as number / 2, height as number / 2 + 100, 'road')
-            .setScale(3, 1)
+        this.road = this.physics.add.image(width as number, height as number / 2 + 100, 'road')
+            .setScale(4.5, 1)
             .setScrollFactor(1)
             .setSize(width as number * 2, 100)
             .setOffset(0, height as number / 2 + 80)
@@ -98,22 +98,6 @@ export class Game extends Scene {
 
         if (Boss.instanceBoss.bossIsKilled) {
             this.boss.enemy.setAnimation(0, 'die', false, true);
-
-            // // Knockout effect: Create a white flash
-            // const flash = this.add.graphics();
-            // flash.fillStyle(0xffffff, 1);
-            // flash.fillRect(this.boss.enemy.x - this.boss.enemy.width / 2, this.boss.enemy.y - this.boss.enemy.height / 2, this.boss.enemy.width, this.boss.enemy.height);
-            // flash.alpha = 0;
-            // this.tweens.add({
-            //     targets: flash,
-            //     alpha: 0.5,
-            //     duration: 100,
-            //     ease: 'Linear',
-            //     onComplete: () => {
-            //         flash.destroy();
-            //     }
-            // });
-
             this.time.addEvent({
                 delay: 1800,
                 callback: () => {

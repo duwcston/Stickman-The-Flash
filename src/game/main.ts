@@ -2,27 +2,27 @@ import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/Game';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
-import { SIZE_WIDTH_SCREEN, SIZE_HEIGHT_SCREEN, MIN_SIZE_WIDTH, MIN_SIZE_HEIGHT, MAX_SIZE_WIDTH, MAX_SIZE_HEIGHT } from './utils/Constant';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import 'phaser/plugins/spine/dist/SpinePlugin';
 
-//  Find out more information about the Game Config at:
-//  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
+const ratio = Math.max(window.innerWidth / window.innerHeight, window.innerHeight / window.innerWidth)
+const DEFAULT_HEIGHT = 756 // any height you want
+const DEFAULT_WIDTH = ratio * DEFAULT_HEIGHT
+
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    width: SIZE_WIDTH_SCREEN,
-    height: SIZE_HEIGHT_SCREEN,
-    min: {
-        width: MIN_SIZE_WIDTH,
-        height: MIN_SIZE_HEIGHT
-    },
-    max: {
-        width: MAX_SIZE_WIDTH,
-        height: MAX_SIZE_HEIGHT
-    },
     parent: 'game-container',
     backgroundColor: '#1c1c1c',
+    dom: {
+        createContainer: true
+    },
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT
+    },
     physics: {
         default: 'arcade',
         arcade: {
@@ -49,18 +49,15 @@ const config: Phaser.Types.Core.GameConfig = {
             }
         ]
     },
-    callbacks: {
-        postBoot: function (game) {
-            game.canvas.style.width = '100%';
-            game.canvas.style.height = '100%';
-        }
+    audio: {
+        disableWebAudio: true,
     }
 };
 
 const StartGame = (parent: string) => {
 
-    return new Game({ ...config, parent });
-
+    const game = new Game({ ...config, parent });
+    return game;
 }
 
 export default StartGame;

@@ -102,7 +102,7 @@ export class Boss extends Enemy {
         this.enemy.addAnimation(0, 'dap_dat', false, 1.15);
         this.enemy.addAnimation(0, 'dat_nut', false, 0.1);
         this.enemy.addAnimation(0, 'idle', true, 0);
-        this.bossComing.play();
+        // this.bossComing.play();
     }
 
     protected enemyVsPlayer() {

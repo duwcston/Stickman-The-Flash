@@ -6,7 +6,6 @@ export class Enemy {
     enemy: SpineGameObject
     road: Phaser.GameObjects.Image;
     player: Player;
-    punchPlayer: Phaser.Sound.BaseSound;
     private static _instanceEnemy: Enemy;
     protected _enemyGroup: Phaser.Physics.Arcade.Group;
     private _enemyHealth: number;
@@ -23,7 +22,6 @@ export class Enemy {
         this.scene = scene;
         this.road = road;
         this.player = player;
-        this.punchPlayer = this.scene.sound.add('enemy_punch');
         this._enemyHealth = this._enemyMaxHealth;
         this._enemyGroup = this.scene.physics.add.group({
             gravityY: 500,
@@ -89,7 +87,7 @@ export class Enemy {
 
     protected enemyVsPlayer() {
         this.scene.time.addEvent({
-            delay: 10,
+            delay: 70,
             callback: () => {
                 const enemies = this._enemyGroup.getChildren() as unknown as SpineGameObject[];
                 enemies.forEach((enemy) => {
@@ -118,7 +116,6 @@ export class Enemy {
         const currentAnimation = currentTrackEntry?.animation?.name;
 
         if (!enemyAttackAnims.includes(currentAnimation)) {
-            this.punchPlayer.play();
             enemy.state.setAnimation(0, Phaser.Utils.Array.GetRandom(enemyAttackAnims), false);
             enemy.state.addListener({
                 event: () => { },
@@ -142,10 +139,10 @@ export class Enemy {
     protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
         this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
         if (enemy.y < this.player.player.y - 40) {
-            enemy.setAnimation(0, 'dang_roi', true);
+            enemy.setAnimation(0, 'dang_roi', false, true);
         }
         else {
-            enemy.setAnimation(0, 'dash', true);
+            enemy.setAnimation(0, 'run', true, true);
         }
     }
 

@@ -110,7 +110,7 @@ export class Player {
 
     private killEnemy(_hitbox: Phaser.GameObjects.GameObject, enemy: SpineGameObject) {
         Enemy.instanceEnemy.enemyHealth -= this.playerDamage;
-        this.hitfx.play();
+        // this.hitfx.play();
         // console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
         if (Enemy.instanceEnemy.enemyHealth <= 0) {
             this._enemyKilled++;
@@ -158,7 +158,7 @@ export class Player {
 
                 hitEffect.fillStyle(0x00ffff, 1);
                 hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 10);
-                this.hitfx.play();
+                // this.hitfx.play();
                 this.scene.tweens.add({
                     targets: hitEffect,
                     alpha: 0,
