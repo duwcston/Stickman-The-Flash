@@ -13,7 +13,7 @@ This template has been updated for:
 - [Vite 5.1.4](https://github.com/vitejs/vite)
 - [TypeScript 5.3.3](https://github.com/microsoft/TypeScript)
 
-![screenshot](screenshot.png)
+![screenshot](Stickman.png)
 
 ## Requirements
 
