@@ -46,6 +46,8 @@ export class Preloader extends Scene {
         //  For example, you can define global animations here, so we can use them in other scenes.
         if (this.sys.game.device.os.android || this.sys.game.device.os.iOS) {
             this.scale.lockOrientation('landscape');
+            this.scale.refresh();
+            this.scale.startFullscreen();
         }
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.

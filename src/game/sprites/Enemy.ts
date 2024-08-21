@@ -137,13 +137,20 @@ export class Enemy {
     }
 
     protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
-        this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
-        if (enemy.y < this.player.player.y - 40) {
-            enemy.setAnimation(0, 'dang_roi', false, true);
+        if (this.player.player.y > this.scene.scale.height / 2 + 50) {
+            this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
+            if (enemy.y < this.player.player.y - 40) {
+                enemy.setAnimation(0, 'dang_roi', false, true);
+            }
+            else {
+                enemy.setAnimation(0, 'run', true, true);
+            }
         }
-        else {
-            enemy.setAnimation(0, 'run', true, true);
-        }
+        // else {
+        //     const runSpeed = this.player.player.x > enemy.x ? chaseSpeed : -chaseSpeed;
+        //     (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(runSpeed, 500);
+        //     enemy.setAnimation(0, 'run', true, true);
+        // }
     }
 
     protected flipEnemy(spine: SpineGameObject, flip: boolean) {

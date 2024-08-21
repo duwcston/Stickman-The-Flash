@@ -98,8 +98,8 @@ export class Player {
     public updateHitbox() {
         // Update hitbox position based on player direction
         this.hitbox.x = this.player.scaleX < 0
-            ? this.player.x - 45
-            : this.player.x + 45;
+            ? this.player.x - 42
+            : this.player.x + 42;
         this.hitbox.y = this.player.y - 55;
     }
 

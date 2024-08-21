@@ -79,8 +79,8 @@ export class Boss extends Enemy {
         const enemyBody = this.enemy.body as Phaser.Physics.Arcade.Body;
         enemyBody.setGravityY(500);
         enemyBody.setCollideWorldBounds(true);
-        enemyBody.checkCollision.left = false;
-        enemyBody.checkCollision.right = false;
+        // enemyBody.checkCollision.left = false;
+        // enemyBody.checkCollision.right = false;
         this.scene.physics.add.collider(this.enemy as unknown as Phaser.Physics.Arcade.Sprite, this.road, () => {
             enemyBody.setVelocityY(0);
         });
@@ -162,8 +162,13 @@ export class Boss extends Enemy {
     }
 
     protected chasePlayer(enemy: SpineGameObject, chaseSpeed: number) {
-        this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
-        enemy.setAnimation(0, 'run', false, true);
+        if (this.player.player.y > this.scene.scale.height / 2 + 50) {
+            this.scene.physics.moveToObject(enemy as unknown as Phaser.Physics.Arcade.Sprite, this.player.player, chaseSpeed);
+            enemy.setAnimation(0, 'run', true, true);
+        }
+        // else {
+        //     enemy.setAnimation(0, 'idle', true, true);
+        // }
     }
 
     private createBossHealthBar() {
