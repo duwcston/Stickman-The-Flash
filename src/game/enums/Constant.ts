@@ -1,13 +1,3 @@
-// 4:3 ratio (800x600, 1024x768, 1152x864, 1280x960, 1400x1050, 1440x1080, 1600x1200, 2048x1536)
-export const SIZE_WIDTH_SCREEN = 1024;
-export const SIZE_HEIGHT_SCREEN = 768;
-
-export const MIN_SIZE_WIDTH = 480;
-export const MIN_SIZE_HEIGHT = 320;
-
-export const MAX_SIZE_WIDTH = 1920;
-export const MAX_SIZE_HEIGHT = 1080;
-
 // Game parameters
 export const PLAYER_SCALE = 0.1;
 export const ENEMY_SCALE = 0.1;

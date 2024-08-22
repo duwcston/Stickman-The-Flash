@@ -7,7 +7,7 @@ import { MainMenu } from './scenes/MainMenu';
 import 'phaser/plugins/spine/dist/SpinePlugin';
 
 const ratio = Math.max(window.innerWidth / window.innerHeight, window.innerHeight / window.innerWidth)
-const DEFAULT_HEIGHT = 756 // any height you want
+const DEFAULT_HEIGHT = 756
 const DEFAULT_WIDTH = ratio * DEFAULT_HEIGHT
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -55,9 +55,7 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const StartGame = (parent: string) => {
-
-    const game = new Game({ ...config, parent });
-    return game;
+    return new Game({ ...config, parent });
 }
 
 export default StartGame;

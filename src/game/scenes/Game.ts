@@ -13,7 +13,6 @@ export class Game extends Scene {
     citybg: Phaser.GameObjects.TileSprite;
     city: Phaser.GameObjects.TileSprite;
     road: Phaser.GameObjects.Image;
-    // road: Phaser.GameObjects.TileSprite;
     player: Player;
     controller: Controller;
     enemy: Enemy;

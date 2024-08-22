@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { IRefPhaserGame, PhaserGame } from './game/PhaserGame';
 
-
 function App() {
 
     //  References to the PhaserGame component (game and scene are exposed)
@@ -9,7 +8,7 @@ function App() {
 
     return (
         <div id="app">
-            <PhaserGame ref={phaserRef}/>
+            <PhaserGame ref={phaserRef} />
             <div>
                 <></>
             </div>

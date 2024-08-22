@@ -9,11 +9,9 @@ export class GameOver extends Scene {
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
-        // Add a semi-transparent black overlay
         const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 1);
         overlay.alpha = 1;
 
-        // Fade in the overlay
         this.tweens.add({
             targets: overlay,
             alpha: 0.3,

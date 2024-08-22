@@ -34,17 +34,17 @@ export class MainMenu extends Scene {
         this.physics.world.fixedStep = true;
 
         this.moon = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'moon')
-            .setScale(2.5, 1.5)
+            .setScale(2, 1.5)
             .setScrollFactor(0);
         this.citybg = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'citybg')
-            .setScale(2.5, 1.5)
+            .setScale(2, 1.5)
             .setScrollFactor(0);
         this.city = this.add.tileSprite(width as number / 2, height as number / 2, 0, 0, 'city')
-            .setScale(2.5, 1.5)
+            .setScale(2, 1.5)
             .setScrollFactor(0);
 
         this.road = this.physics.add.image(width as number / 2, height as number / 2 + 100, 'road')
-            .setScale(3, 1)
+            .setScale(2, 1)
             .setScrollFactor(0)
             .setSize(width as number, 100)
             .setOffset(0, height as number / 2 + 90)
@@ -53,7 +53,7 @@ export class MainMenu extends Scene {
 
         this.player = new Player(this, this.road);
 
-        const startButton = this.add.text(width, height / 2 - 50, 'Press ANY button to start', {
+        const startButton = this.add.text(width, height / 2 - 50, 'Tap to start', {
             fontSize: '48px',
             color: '#ffffff'
         }).setOrigin(0.5).setInteractive().setDepth(2);
@@ -66,11 +66,7 @@ export class MainMenu extends Scene {
             repeat: -1
         });
 
-        this.input.keyboard?.on("keydown", () => {
-            this.scene.start("Game");
-        });
-
-        startButton.on('pointerdown', () => {
+        this.input.on('pointerdown', () => {
             this.scene.start('Game');
         });
     }

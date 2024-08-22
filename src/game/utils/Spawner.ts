@@ -20,7 +20,6 @@ export class Spawner {
             callback: () => {
                 const enemyKilled = Player.instancePlayer.enemyKilled;
                 if (enemyKilled >= 3) {
-                    console.log('More enemy spawned');
                     this.updateSpawnTime(1000);
                 }
                 else {
@@ -39,7 +38,6 @@ export class Spawner {
             callback: () => {
                 const enemyKilled = Player.instancePlayer.enemyKilled;
                 if (enemyKilled >= 15) {
-                    console.log('Boss spawned');
                     this.destroyAllCreeps();
                     this.spawnBoss();
                     this._timer.remove();

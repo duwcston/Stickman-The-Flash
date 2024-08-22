@@ -9,13 +9,12 @@ export class Player {
     hitbox: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     playerHealthBar: Phaser.GameObjects.Graphics;
     creepOverlap: Phaser.Physics.Arcade.Collider;
-    hitfx: Phaser.Sound.BaseSound;
     private static _instancePlayer: Player;
 
-    private _enemyKilled: number;
-    private _isTakingDamage: boolean;
+    private _enemyKilled: number = 0;
+    private _isTakingDamage: boolean = false;
     private _maxHealth: number = 500;
-    private _health: number;
+    private _health: number = this._maxHealth;
     private _playerDamage: number = 10;
 
     static get instancePlayer() {
@@ -27,12 +26,10 @@ export class Player {
 
         this.scene = scene;
         this.road = road;
+        this.playerHealthBar = this.scene.add.graphics();
+
         this.createPlayer(this.scene.scale.width, this.scene.scale.height / 2 + 50);
         this.createHitbox();
-        this._enemyKilled = 0;
-        this.hitfx = this.scene.sound.add('hit', { volume: 0.5 });
-        this._health = this._maxHealth
-        this.playerHealthBar = this.scene.add.graphics();
     }
 
     get enemyKilled() {
@@ -41,6 +38,15 @@ export class Player {
 
     get isTakingDamage() {
         return this._isTakingDamage;
+    }
+
+    set isTakingDamage(value: boolean) {
+        this._isTakingDamage = value;
+        if (value && this._health > 0) {
+            this.player.setAnimation(0, 'hit', false);
+            this.player.addAnimation(0, 'idle', true, 0);
+            this.takeDamage(Enemy.instanceEnemy.enemyDamage);
+        }
     }
 
     get maxHealth() {
@@ -55,39 +61,30 @@ export class Player {
         return this._playerDamage;
     }
 
-    public set isTakingDamage(value: boolean) {
-        this._isTakingDamage = value;
-        if ((this._isTakingDamage) && (this._health > 0)) {
-            this.player.setAnimation(0, 'hit', false);
-            this.player.addAnimation(0, 'idle', true, 0);
-            this.takeDamage(Enemy.instanceEnemy.enemyDamage);
-        }
-    }
-
     public createPlayer(x: number, y: number) {
         this.player = this.scene.add.spine(x, y, 'spiderman');
         this.player.setScale(PLAYER_SCALE);
         this.scene.physics.add.existing(this.player as unknown as Phaser.Physics.Arcade.Image);
-        this.isTakingDamage = false;
-        this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.road, () => {
-            this.player.addAnimation(0, 'idle', true, 0);
-        });
 
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         body.setCollideWorldBounds(true);
         body.setGravityY(300);
+
+        this.scene.physics.add.collider(this.player as unknown as Phaser.Physics.Arcade.Image, this.road, () => {
+            this.player.addAnimation(0, 'idle', true, 0);
+        });
+
         this.setPlayerStartAnimations();
     }
 
     private setPlayerStartAnimations() {
-        // Set the initial animation
         this.player.setAnimation(0, 'dang_roi', true);
         this.player.addAnimation(0, 'dang_roi', false, 0);
         this.player.addAnimation(0, 'dap_dat', false, 0.75);
         this.player.addAnimation(0, 'idle', true, 0);
     }
 
-    private createHitbox(): void {
+    private createHitbox() {
         this.hitbox = this.scene.add.rectangle(0, 0, 60, 30, 0xffffff, 0.5) as unknown as Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
         this.scene.physics.add.existing(this.hitbox);
         this.hitbox.visible = false;
@@ -96,53 +93,48 @@ export class Player {
     }
 
     public updateHitbox() {
-        // Update hitbox position based on player direction
-        this.hitbox.x = this.player.scaleX < 0
-            ? this.player.x - 42
-            : this.player.x + 42;
-        this.hitbox.y = this.player.y - 55;
+        this.hitbox.setPosition(
+            this.player.scaleX < 0 ? this.player.x - 42 : this.player.x + 42,
+            this.player.y - 55
+        );
     }
 
-    public attackEnemy(): void {
-        // console.log('Enemy count from player: ', Enemy.instanceEnemy.enemyGroup.countActive()); // Debugging
+    public attackEnemy() {
         this.creepOverlap = this.scene.physics.add.overlap(this.hitbox, Enemy.instanceEnemy.enemyGroup, this.killEnemy, undefined, this);
     }
 
     private killEnemy(_hitbox: Phaser.GameObjects.GameObject, enemy: SpineGameObject) {
-        Enemy.instanceEnemy.enemyHealth -= this.playerDamage;
-        // this.hitfx.play();
-        // console.log('Enemy health: ', Enemy.instanceEnemy.enemyHealth); // Debugging
-        if (Enemy.instanceEnemy.enemyHealth <= 0) {
+        const enemyInstance = Enemy.instanceEnemy;
+
+        enemyInstance.enemyHealth -= this._playerDamage;
+
+        if (enemyInstance.enemyHealth <= 0) {
             this._enemyKilled++;
-            console.log('Enemy killed: ', this._enemyKilled);
-            Enemy.instanceEnemy.enemyGroup.remove(enemy as unknown as Phaser.Physics.Arcade.Sprite);
+            console.log('Enemy killed:', this._enemyKilled);
+
+            enemyInstance.enemyGroup.remove(enemy as unknown as Phaser.Physics.Arcade.Sprite);
+
             const knockbackX = this.player.x < enemy.x ? 1000 : -1000;
             const knockbackY = -700;
             (enemy.body as Phaser.Physics.Arcade.Body)?.setVelocity(knockbackX, knockbackY);
 
             enemy.setAnimation(0, 'die', false, true);
-            this.scene.time.delayedCall(400, () => {
-                enemy.destroy();
-            })
+            this.scene.time.delayedCall(400, () => enemy.destroy());
         }
     }
 
     public createPlayerHealthBar() {
         const barWidth = 700;
         const barHeight = 15;
-        const healthRatio = this.health / this.maxHealth;
+        const healthRatio = this._health / this._maxHealth;
 
         this.playerHealthBar.clear();
-        this.playerHealthBar.fillStyle(0xff0000); // Red bar
-        this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth, barHeight).setScrollFactor(0);
-
-        this.playerHealthBar.fillStyle(0x00ff00); // Green bar
-        this.playerHealthBar.fillRect(this.scene.scale.width / 2 - barWidth / 2, 0 + barHeight, barWidth * healthRatio, barHeight).setScrollFactor(0);
-
+        this.playerHealthBar.fillStyle(0xff0000).fillRect(this.scene.scale.width / 2 - barWidth / 2, barHeight, barWidth, barHeight).setScrollFactor(0);
+        this.playerHealthBar.fillStyle(0x00ff00).fillRect(this.scene.scale.width / 2 - barWidth / 2, barHeight, barWidth * healthRatio, barHeight).setScrollFactor(0);
     }
 
     private takeDamage(amount: number) {
-        this._health = Phaser.Math.Clamp(this._health - amount, 0, this.maxHealth);
+        this._health = Phaser.Math.Clamp(this._health - amount, 0, this._maxHealth);
         this.createPlayerHealthBar();
     }
 
@@ -155,27 +147,26 @@ export class Player {
             const currentAnimation = currentTrackEntry?.animation?.name;
 
             if (attackAnims.includes(currentAnimation)) {
-                const hitEffect = this.scene.add.graphics();
-
-                hitEffect.fillStyle(0x00ffff, 1);
-                hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 5);
-                hitEffect.fillStyle(0x24a3ff, 0.5);
-                hitEffect.fillCircle(this.hitbox.x, this.hitbox.y, 10);
-                // this.hitfx.play();
-                this.scene.tweens.add({
-                    targets: hitEffect,
-                    alpha: 0,
-                    duration: 200,
-                    onComplete: () => {
-                        hitEffect.destroy();
-                    }
-                });
-
+                this.showHitEffect();
                 Boss.instanceBoss.bossIsTakingDamage = true;
                 this.scene.time.delayedCall(100, () => {
                     Boss.instanceBoss.bossIsTakingDamage = false;
                 });
             }
         }, undefined, this);
+    }
+
+    private showHitEffect() {
+        const hitEffect = this.scene.add.graphics();
+
+        hitEffect.fillStyle(0x00ffff, 1).fillCircle(this.hitbox.x, this.hitbox.y, 5);
+        hitEffect.fillStyle(0x24a3ff, 0.5).fillCircle(this.hitbox.x, this.hitbox.y, 10);
+
+        this.scene.tweens.add({
+            targets: hitEffect,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => hitEffect.destroy()
+        });
     }
 }

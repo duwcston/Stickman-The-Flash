@@ -8,9 +8,9 @@ export class Preloader extends Scene {
     init() {
         const { width, height } = this.sys.game.config;
 
-        this.add.image(width as number / 2, height as number / 2, 'moon').setScale(2.5, 1.5).setScrollFactor(0);
-        this.add.image(width as number / 2, height as number / 2, 'citybg').setScale(2.5, 1.5).setScrollFactor(0);
-        this.add.image(width as number / 2, height as number / 2, 'city').setScale(2.5, 1.5).setScrollFactor(0);
+        this.add.image(width as number / 2, height as number / 2, 'moon').setScale(2.5, 1.5);
+        this.add.image(width as number / 2, height as number / 2, 'citybg').setScale(2.5, 1.5);
+        this.add.image(width as number / 2, height as number / 2, 'city').setScale(2.5, 1.5);
 
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(width as number / 2, 384, 468, 32).setStrokeStyle(1, 0xffffff);
@@ -37,22 +37,9 @@ export class Preloader extends Scene {
         // Load the audio assets
         this.load.audio('theme', 'audio/funky-loop-40283.mp3');
         this.load.audio('swoosh', 'audio/swoosh.mp3');
-        this.load.audio('hit', 'audio/punch-fx.mp3')
-        this.load.audio('boss_coming', 'audio/boss-falling.mp3');
     }
 
     create() {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
-        if (this.sys.game.device.os.android || this.sys.game.device.os.iOS) {
-            this.scale.lockOrientation('landscape');
-            this.scale.refresh();
-            this.scale.startFullscreen();
-        }
-
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('MainMenu');
-        // this.scene.start('Game'); //Debugging
-
     }
 }
